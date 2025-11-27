@@ -1,64 +1,195 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Mail, MapPin, Phone, Send } from "lucide-react";
 
 export default function Contact() {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    company: '',
+    message: ''
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Form submitted:', formData);
+    // Add your form submission logic here
+  };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
   return (
-    <div className="w-full flex justify-center py-16 bg-gray-50">
-      <div className="max-w-6xl w-full px-4 grid grid-cols-1 md:grid-cols-3 gap-12">
+    <div className="w-full bg-white py-20">
+      <div className="max-w-6xl mx-auto px-6">
 
         {/* Header */}
-        <div className="md:col-span-3 text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-900">
-            Contact Us
+        <div className="text-center mb-16">
+          <Badge className="mb-4 bg-slate-900 text-white px-4 py-1.5">Get In Touch</Badge>
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+            Let's Start a Conversation
           </h1>
-        </div>
-
-        {/* Contact Info */}
-        <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-slate-900">Get In Touch</h2>
-          <p className="text-slate-600 leading-6">
-            We're here to answer questions, discuss your AI training needs,
-            or explore how we can support your organization.
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+            Have questions about AI training or consulting? We're here to help you find the right solution.
           </p>
-          <div>
-            <p className="font-medium text-slate-700">Email</p>
-            <p className="text-slate-600">info@memoricai.in</p>
-          </div>
-          <div>
-            <p className="font-medium text-slate-700">Office</p>
-            <p className="text-slate-600">Bangalore, India</p>
-          </div>
         </div>
 
-        {/* Form */}
-        <div className="md:col-span-2 flex justify-center">
-          <Card className="w-full max-w-md p-8 shadow-lg border">
-            <form className="space-y-4">
-              <label className="block">
-                <span className="text-sm font-medium text-slate-700">Name</span>
-                <Input name="name" placeholder="Your Name" required className="mt-1" />
-              </label>
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
 
-              <label className="block">
-                <span className="text-sm font-medium text-slate-700">Email</span>
-                <Input name="email" type="email" placeholder="your@email.com" required className="mt-1" />
-              </label>
+          {/* Contact Info Cards - Left Side */}
+          <div className="lg:col-span-2 space-y-6">
+            
+            <Card className="p-6 border-2 border-slate-100 hover:border-slate-900 transition-all duration-300">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-slate-900 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Mail className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 mb-1">Email Us</h3>
+                  <p className="text-sm text-slate-600 mb-2">
+                    Send us an email anytime
+                  </p>
+                  <a href="mailto:info@memoricai.in" className="text-sm font-semibold text-slate-900 hover:underline">
+                    info@memoricai.in
+                  </a>
+                </div>
+              </div>
+            </Card>
 
-              <label className="block">
-                <span className="text-sm font-medium text-slate-700">Message</span>
-                <Textarea name="message" placeholder="Your Message..." required className="mt-1 h-32" />
-              </label>
+            <Card className="p-6 border-2 border-slate-100 hover:border-slate-900 transition-all duration-300">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-slate-900 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <MapPin className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 mb-1">Visit Office</h3>
+                  <p className="text-sm text-slate-600 mb-2">
+                    Come say hello
+                  </p>
+                  <p className="text-sm font-semibold text-slate-900">
+                    Bangalore, India
+                  </p>
+                </div>
+              </div>
+            </Card>
 
-              <Button type="submit" className="w-full bg-sky-600 hover:bg-sky-700">
-                Send Message
-              </Button>
-            </form>
-          </Card>
+            <Card className="p-6 border-2 border-slate-100 hover:border-slate-900 transition-all duration-300">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-slate-900 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Phone className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 mb-1">Call Us</h3>
+                  <p className="text-sm text-slate-600 mb-2">
+                    Mon-Fri from 9am to 6pm
+                  </p>
+                  <p className="text-sm font-semibold text-slate-900">
+                    +91 (xxx) xxx-xxxx
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+          </div>
+
+          {/* Contact Form - Right Side */}
+          <div className="lg:col-span-3">
+            <Card className="p-8 border-2 border-slate-100 shadow-lg">
+              <div className="space-y-6">
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-900 mb-2">
+                      First Name
+                    </label>
+                    <Input 
+                      name="firstName" 
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      placeholder="John" 
+                      className="h-12 border-slate-200 focus:border-slate-900"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-900 mb-2">
+                      Last Name
+                    </label>
+                    <Input 
+                      name="lastName" 
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      placeholder="Doe" 
+                      className="h-12 border-slate-200 focus:border-slate-900"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-900 mb-2">
+                    Email Address
+                  </label>
+                  <Input 
+                    name="email" 
+                    type="email" 
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="john@example.com" 
+                    className="h-12 border-slate-200 focus:border-slate-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-900 mb-2">
+                    Company (Optional)
+                  </label>
+                  <Input 
+                    name="company" 
+                    value={formData.company}
+                    onChange={handleChange}
+                    placeholder="Your Company" 
+                    className="h-12 border-slate-200 focus:border-slate-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-900 mb-2">
+                    Message
+                  </label>
+                  <Textarea 
+                    name="message" 
+                    value={formData.message}
+                    onChange={handleChange}
+                    placeholder="Tell us how we can help you..." 
+                    className="h-40 border-slate-200 focus:border-slate-900 resize-none"
+                  />
+                </div>
+
+                <Button 
+                  onClick={handleSubmit}
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6 text-base group"
+                >
+                  Send Message
+                  <Send className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Button>
+
+                <p className="text-xs text-slate-500 text-center">
+                  We'll get back to you within 24 hours
+                </p>
+              </div>
+            </Card>
+          </div>
+
         </div>
-
       </div>
     </div>
   );

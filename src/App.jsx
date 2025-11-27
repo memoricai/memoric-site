@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import Sections from "./pages/Sections";
 
 export default function App() {
@@ -26,9 +27,10 @@ export default function App() {
       {sidebarOpen && <Sidebar setOpen={setSidebarOpen} />}
 
       <main className="flex-1">
-        {/* All sections always rendered */}
         <Sections />
       </main>
+
+      <Footer />
     </div>
   );
 }

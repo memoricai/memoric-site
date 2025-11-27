@@ -9,29 +9,31 @@ export default function Navbar({ setSidebarOpen }) {
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
-            className="md:hidden p-2"
+            className="md:hidden p-2 hover:bg-slate-100"
             onClick={() => setSidebarOpen((s) => !s)}
           >
-            <Menu className="w-5 h-5" />
+            <Menu className="w-5 h-5 text-slate-700" />
           </Button>
 
-          <a href="#home" className="hidden md:flex items-center gap-2">
-            <span className="text-lg font-bold">Memoric AI</span>
+          <a href="#home" className="flex items-center gap-2">
+            <span className="text-xl font-bold text-slate-900">MemoricAI</span>
           </a>
         </div>
 
-        <nav className="hidden md:flex items-center gap-4">
+        <nav className="hidden md:flex items-center gap-2">
           {["Home", "Courses", "About", "Contact"].map((item) => (
             <a
               key={item}
               href={`#${item.toLowerCase()}`}
-              className="text-sm hover:text-slate-700 font-medium transition-colors"
+              className="px-4 py-2 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-md transition-all"
             >
               {item}
             </a>
           ))}
 
-          <Button className="ml-4">Login</Button>
+          <Button className="ml-2 bg-slate-900 hover:bg-slate-800 text-white font-medium px-6">
+            Login
+          </Button>
         </nav>
       </div>
     </header>
