@@ -7,6 +7,8 @@ const COURSE_API_URL = import.meta.env.VITE_COURSE_API_URL;
 const BATCH_API_URL = import.meta.env.VITE_BATCH_API_URL;
 const API_TOKEN = import.meta.env.VITE_COURSE_API_TOKEN;
 const BASE_URL = import.meta.env.VITE_BASE_URL;
+const LMS_COURSE_URL = import.meta.env.VITE_LMS_COURSE_URL;
+const LMS_BATCH_URL = import.meta.env.VITE_LMS_BATCH_URL;
 
 export default function Courses() {
   const [courses, setCourses] = useState([]);
@@ -19,9 +21,7 @@ export default function Courses() {
     const fetchCourses = async () => {
       try {
         const res = await fetch(COURSE_API_URL, {
-          headers: {
-            Authorization: `token ${API_TOKEN}`,
-          },
+          headers: { Authorization: `token ${API_TOKEN}` },
         });
         const data = await res.json();
         setCourses(data.data);
@@ -31,7 +31,6 @@ export default function Courses() {
         setLoading(false);
       }
     };
-
     fetchCourses();
   }, []);
 
@@ -40,9 +39,7 @@ export default function Courses() {
     const fetchBatches = async () => {
       try {
         const res = await fetch(BATCH_API_URL, {
-          headers: {
-            Authorization: `token ${API_TOKEN}`,
-          },
+          headers: { Authorization: `token ${API_TOKEN}` },
         });
         const data = await res.json();
         setBatches(data.data);
@@ -52,7 +49,6 @@ export default function Courses() {
         setBatchLoading(false);
       }
     };
-
     fetchBatches();
   }, []);
 
@@ -66,8 +62,8 @@ export default function Courses() {
   return (
     <div className="w-full bg-slate-50 py-20">
       <div className="container mx-auto max-w-6xl px-6">
-        
-        {/* ---------------- COURSES SECTION ---------------- */}
+
+        {/* COURSES SECTION */}
         <div className="text-center mb-16">
           <Badge className="mb-4 bg-slate-900 text-white px-4 py-1.5">Our Courses</Badge>
           <h1 className="text-4xl md:text-5xl font-bold mb-4 text-slate-900">
@@ -88,7 +84,6 @@ export default function Courses() {
                 className="p-6 flex flex-col border-2 border-slate-100 hover:border-slate-900 hover:shadow-xl transition-all duration-300 bg-white"
               >
                 <div className="flex-1">
-
                   {course.image && (
                     <img
                       src={`${BASE_URL}${course.image}`}
@@ -117,12 +112,14 @@ export default function Courses() {
                         Free
                       </span>
                     )}
-                    {course.enable_certification== 1 && (
+
+                    {course.enable_certification === 1 && (
                       <span className="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700 border border-green-300">
                         Certificate
                       </span>
                     )}
-                    {course.paid_certificate==1  && (
+
+                    {course.paid_certificate === 1 && (
                       <span className="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700 border border-yellow-300">
                         Paid Certificate
                       </span>
@@ -130,15 +127,23 @@ export default function Courses() {
                   </div>
                 </div>
 
-                <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6">
-                  Enroll Now
-                </Button>
+                {/* Enroll Button */}
+                <a
+                  href={`${LMS_COURSE_URL}/${course.name}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="cursor-pointer"
+                >
+                  <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6 cursor-pointer">
+                    Enroll Now
+                  </Button>
+                </a>
+
               </Card>
             ))}
         </div>
 
-
-        {/* ---------------- BATCHES SECTION ---------------- */}
+        {/* BATCHES SECTION */}
         <div className="text-center mb-12">
           <Badge className="mb-4 bg-slate-900 text-white px-4 py-1.5">Upcoming Batches</Badge>
           <h2 className="text-3xl md:text-4xl font-bold mb-2 text-slate-900">
@@ -159,11 +164,7 @@ export default function Courses() {
                 className="p-6 flex flex-col border-2 border-slate-100 hover:border-slate-900 hover:shadow-xl transition-all duration-300 bg-white"
               >
                 <div className="flex-1">
-
-                  <h3 className="text-xl font-bold mb-3 text-slate-900">
-                    {batch.title}
-                  </h3>
-
+                  <h3 className="text-xl font-bold mb-3 text-slate-900">{batch.title}</h3>
                   <p className="text-sm text-slate-600 mb-4">{batch.description}</p>
 
                   <div className="text-sm text-slate-600 space-y-1 mb-6">
@@ -186,9 +187,18 @@ export default function Courses() {
                   </div>
                 </div>
 
-                <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6">
-                  Join Batch
-                </Button>
+                {/* Join Batch Button */}
+                <a
+                  href={`${LMS_BATCH_URL}/${batch.name}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="cursor-pointer"
+                >
+                  <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6 cursor-pointer">
+                    Join Batch
+                  </Button>
+                </a>
+
               </Card>
             ))}
         </div>
