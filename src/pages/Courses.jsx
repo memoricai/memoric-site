@@ -60,6 +60,13 @@ export default function Courses() {
               className="p-6 flex flex-col border-2 border-slate-100 hover:border-slate-900 hover:shadow-xl transition-all duration-300 bg-white"
             >
               <div className="flex-1">
+              {course.image_url && (
+                  <img
+                    src={course.image_url}
+                    alt={course.title}
+                    className="w-full h-40 object-cover mb-4 rounded"
+                  />
+                )}
                 {/* Category Badge */}
                 {course.category && (
                   <Badge className="mb-4 bg-slate-100 text-slate-900 hover:bg-slate-200 font-medium">
