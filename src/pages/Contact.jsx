@@ -146,9 +146,6 @@ export default function Contact() {
                   <Send className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
 
-                <p className="text-xs text-slate-500 text-center">
-                  We'll get back to you within 24 hours
-                </p>
               </div>
             </Card>
           </div>
