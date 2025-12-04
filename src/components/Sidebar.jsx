@@ -35,12 +35,6 @@ export default function Sidebar({ setOpen }) {
             </a>
           ))}
           
-          <Button 
-            className="mt-4 w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6"
-            onClick={() => setOpen(false)}
-          >
-            Login
-          </Button>
         </nav>
       </div>
     </div>

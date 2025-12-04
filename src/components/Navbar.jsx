@@ -30,10 +30,7 @@ export default function Navbar({ setSidebarOpen }) {
               {item}
             </a>
           ))}
-
-          <Button className="ml-2 bg-slate-900 hover:bg-slate-800 text-white font-medium px-6">
-            Login
-          </Button>
+          
         </nav>
       </div>
     </header>

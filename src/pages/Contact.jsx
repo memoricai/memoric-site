@@ -55,8 +55,8 @@ export default function Contact() {
                 </div>
                 <div>
                   <h3 className="font-bold text-slate-900 mb-1">Email</h3>
-                  <a href="mailto:info@memoricai.in" className="text-sm font-semibold text-slate-900 hover:underline">
-                    info@memoricai.in
+                  <a href="mailto:support@memoricai.in" className="text-sm font-semibold text-slate-900 hover:underline">
+                    support@memoricai.in
                   </a>
                 </div>
               </div>
@@ -121,19 +121,6 @@ export default function Contact() {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="john@example.com" 
-                    className="h-12 border-slate-200 focus:border-slate-900"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-slate-900 mb-2">
-                    Company (Optional)
-                  </label>
-                  <Input 
-                    name="company" 
-                    value={formData.company}
-                    onChange={handleChange}
-                    placeholder="Your Company" 
                     className="h-12 border-slate-200 focus:border-slate-900"
                   />
                 </div>
