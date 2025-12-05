@@ -16,6 +16,30 @@ export default function Courses() {
   const [loading, setLoading] = useState(true);
   const [batchLoading, setBatchLoading] = useState(true);
 
+  // ⭐ Date Formatter
+  function formatDate(dateStr) {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  }
+
+  // ⭐ Time Formatter
+  function formatTime(timeStr) {
+    if (!timeStr) return "";
+    const [hours, minutes] = timeStr.split(":");
+    const date = new Date();
+    date.setHours(hours, minutes);
+    return date.toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  }
+
   // Fetch Courses
   useEffect(() => {
     const fetchCourses = async () => {
@@ -81,31 +105,44 @@ export default function Courses() {
             .map((course) => (
               <Card
                 key={course.name}
-                className="p-6 flex flex-col border-2 border-slate-100 hover:border-slate-900 hover:shadow-xl transition-all duration-300 bg-white"
+                className="p-0 flex flex-col border-2 border-slate-100 hover:border-slate-900 hover:shadow-xl transition-all duration-300 bg-white overflow-hidden h-full"
               >
-                <div className="flex-1">
-                  {course.image && (
+                {/* Image Section */}
+                <div className="w-full h-48 overflow-hidden bg-slate-100">
+                  {course.image ? (
                     <img
                       src={`${BASE_URL}${course.image}`}
                       alt={course.title}
-                      className="w-full h-40 object-cover mb-4 rounded"
+                      className="w-full h-full object-cover"
                     />
+                  ) : (
+                    <div className="w-full h-full bg-slate-200" />
                   )}
+                </div>
 
-                  {course.category && (
-                    <Badge className="mb-4 bg-slate-100 text-slate-900 hover:bg-slate-200 font-medium">
-                      {course.category}
-                    </Badge>
-                  )}
+                {/* Content Section */}
+                <div className="p-6 flex flex-col flex-grow">
+                  <div className="flex-grow">
+                    {course.category && (
+                      <Badge className="mb-3 bg-slate-100 text-slate-900 hover:bg-slate-200 font-medium">
+                        {course.category}
+                      </Badge>
+                    )}
 
-                  <h3 className="text-xl font-bold mb-3 text-slate-900">{course.title}</h3>
+                    <h3 className="text-xl font-bold mb-3 text-slate-900 line-clamp-2">
+                      {course.title}
+                    </h3>
 
-                  <p className="text-sm text-slate-600 mb-6">{course.short_introduction}</p>
+                    <p className="text-sm text-slate-600 mb-4 line-clamp-3">
+                      {course.short_introduction}
+                    </p>
+                  </div>
 
-                  <div className="flex gap-4 text-xs text-slate-500">
+                  {/* Badges */}
+                  <div className="flex flex-wrap gap-2 mb-4">
                     {course.paid_course ? (
                       <span className="px-3 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-700 border border-purple-300">
-                        Paid
+                        Paid - {course.course_price ? `₹${course.course_price}` : "Contact us"}
                       </span>
                     ) : (
                       <span className="px-3 py-1 text-xs font-semibold rounded-full bg-teal-100 text-teal-700 border border-teal-300">
@@ -121,24 +158,21 @@ export default function Courses() {
 
                     {course.paid_certificate === 1 && (
                       <span className="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700 border border-yellow-300">
-                        Paid Certificate
+                        Paid Cert
                       </span>
                     )}
                   </div>
+
+                  <a
+                    href={`${LMS_COURSE_URL}/${course.name}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6 cursor-pointer">
+                      Enroll Now
+                    </Button>
+                  </a>
                 </div>
-
-                {/* Enroll Button */}
-                <a
-                  href={`${LMS_COURSE_URL}/${course.name}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="cursor-pointer"
-                >
-                  <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6 cursor-pointer">
-                    Enroll Now
-                  </Button>
-                </a>
-
               </Card>
             ))}
         </div>
@@ -161,44 +195,65 @@ export default function Courses() {
             .map((batch) => (
               <Card
                 key={batch.name}
-                className="p-6 flex flex-col border-2 border-slate-100 hover:border-slate-900 hover:shadow-xl transition-all duration-300 bg-white"
+                className="p-6 flex flex-col border-2 border-slate-100 hover:border-slate-900 hover:shadow-xl transition-all duration-300 bg-white h-full"
               >
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold mb-3 text-slate-900">{batch.title}</h3>
-                  <p className="text-sm text-slate-600 mb-4">{batch.description}</p>
+                <div className="flex-grow">
+                  <h3 className="text-xl font-bold mb-3 text-slate-900 line-clamp-2">
+                    {batch.title}
+                  </h3>
 
-                  <div className="text-sm text-slate-600 space-y-1 mb-6">
-                    <p><strong>Start:</strong> {batch.start_date}</p>
-                    <p><strong>End:</strong> {batch.end_date}</p>
-                    <p><strong>Time:</strong> {batch.start_time} - {batch.end_time}</p>
-                    <p><strong>Mode:</strong> {batch.medium}</p>
-                  </div>
+                  <p className="text-sm text-slate-600 mb-4 line-clamp-2">
+                    {batch.description}
+                  </p>
 
-                  <div className="flex gap-4 text-xs text-slate-500">
-                    {batch.paid_batch ? (
-                      <span className="px-3 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-700 border border-purple-300">
-                        Paid
+                  {/* ⭐ Updated Date + Time Formatting */}
+                  <div className="text-sm text-slate-600 space-y-2 mb-4 bg-slate-50 p-4 rounded-lg">
+                    <div className="flex justify-between">
+                      <span className="font-semibold text-slate-700">Start:</span>
+                      <span>{formatDate(batch.start_date)}</span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="font-semibold text-slate-700">End:</span>
+                      <span>{formatDate(batch.end_date)}</span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="font-semibold text-slate-700">Time:</span>
+                      <span>
+                        {formatTime(batch.start_time)} – {formatTime(batch.end_time)}
                       </span>
-                    ) : (
-                      <span className="px-3 py-1 text-xs font-semibold rounded-full bg-teal-100 text-teal-700 border border-teal-300">
-                        Free
-                      </span>
-                    )}
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="font-semibold text-slate-700">Mode:</span>
+                      <span className="font-medium text-slate-900">{batch.medium}</span>
+                    </div>
                   </div>
                 </div>
 
-                {/* Join Batch Button */}
+                {/* Price Badge */}
+                <div className="mb-4">
+                  {batch.paid_batch ? (
+                    <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-700 border border-purple-300">
+                      Paid - {batch.amount ? `₹${batch.amount}` : "Contact us"}
+                    </span>
+                  ) : (
+                    <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-teal-100 text-teal-700 border border-teal-300">
+                      Free
+                    </span>
+                  )}
+                </div>
+
                 <a
                   href={`${LMS_BATCH_URL}/${batch.name}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="cursor-pointer"
                 >
                   <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6 cursor-pointer">
                     Join Batch
                   </Button>
                 </a>
-
               </Card>
             ))}
         </div>

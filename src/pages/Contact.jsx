@@ -147,7 +147,7 @@ export default function Contact() {
 
                 <Button 
                   onClick={handleSubmit}
-                  className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6 text-base group"
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6 text-base group cursor-pointer"
                 >
                   Send Message
                   <Send className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />

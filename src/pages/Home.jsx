@@ -42,7 +42,7 @@ export default function Home() {
                     element.scrollIntoView({ behavior: 'smooth' });
                   }
                 }}
-                className="bg-white text-slate-900 hover:bg-slate-100 px-8 py-6 text-base font-semibold group"
+                className="bg-white text-slate-900 hover:bg-slate-100 px-8 py-6 text-base font-semibold group cursor-pointer"
               >
                 Explore Courses
                 <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -55,7 +55,7 @@ export default function Home() {
                   }
                 }}
                 variant="outline" 
-                className="border-white/30 text-slate-900 hover:bg-white/10 px-8 py-6 text-base font-semibold"
+                className="border-white/30 text-slate-900 hover:bg-white/10 px-8 py-6 text-base font-semibold cursor-pointer"
               >
                 Contact Us
               </Button>
