@@ -108,7 +108,7 @@ export default function Courses() {
                 className="p-0 flex flex-col border-2 border-slate-100 hover:border-slate-900 hover:shadow-xl transition-all duration-300 bg-white overflow-hidden h-full"
               >
                 {/* Image Section */}
-                <div className="w-full h-48 overflow-hidden bg-slate-100">
+                <div className="w-full h-48 overflow-hidden">
                   {course.image ? (
                     <img
                       src={`${BASE_URL}${course.image}`}
@@ -116,13 +116,22 @@ export default function Courses() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full bg-slate-200" />
+                    <div
+                      className="w-full h-full flex items-center justify-center text-white text-lg font-bold text-center px-4"
+                      style={{
+                        background: `linear-gradient(180deg, #cba3f5 0%, #000000 100%)`,
+                      }}
+                    >
+                      {course.title}
+                    </div>
                   )}
                 </div>
 
                 {/* Content Section */}
-                <div className="p-6 flex flex-col flex-grow">
+                <div className="px-6 pb-6 flex flex-col flex-grow">
                   <div className="flex-grow">
+
+                    {/* ⭐ Category */}
                     {course.category && (
                       <Badge className="mb-3 bg-slate-100 text-slate-900 hover:bg-slate-200 font-medium">
                         {course.category}
@@ -142,7 +151,7 @@ export default function Courses() {
                   <div className="flex flex-wrap gap-2 mb-4">
                     {course.paid_course ? (
                       <span className="px-3 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-700 border border-purple-300">
-                        Paid - {course.course_price ? `₹${course.course_price}` : "Contact us"}
+                        Paid – {course.course_price ? `₹${course.course_price}` : "Contact us"}
                       </span>
                     ) : (
                       <span className="px-3 py-1 text-xs font-semibold rounded-full bg-teal-100 text-teal-700 border border-teal-300">
@@ -158,7 +167,7 @@ export default function Courses() {
 
                     {course.paid_certificate === 1 && (
                       <span className="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700 border border-yellow-300">
-                        Paid Cert
+                        Paid Certificate
                       </span>
                     )}
                   </div>
@@ -202,32 +211,42 @@ export default function Courses() {
                     {batch.title}
                   </h3>
 
+                  {/* ⭐ Seats Left */}
+                  <div className="mb-3">
+                    <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 border border-yellow-300">
+                      {batch.seat_count ? `${batch.seat_count} Seats` : "Unlimited Seats"}
+                    </span>
+                  </div>
+
                   <p className="text-sm text-slate-600 mb-4 line-clamp-2">
                     {batch.description}
                   </p>
 
-                  {/* ⭐ Updated Date + Time Formatting */}
-                  <div className="text-sm text-slate-600 space-y-2 mb-4 bg-slate-50 p-4 rounded-lg">
-                    <div className="flex justify-between">
-                      <span className="font-semibold text-slate-700">Start:</span>
-                      <span>{formatDate(batch.start_date)}</span>
+                  {/* ⭐ Updated Detailed Block */}
+                  <div className="text-sm text-slate-600 space-y-3 mb-2 bg-slate-50 p-4 rounded-lg">
+
+                    {/* Date Range */}
+                    <div className="flex items-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path strokeLinecap="round" strokeWidth="2" d="M8 7V3m8 4V3M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <span>{formatDate(batch.start_date)} – {formatDate(batch.end_date)}</span>
                     </div>
 
-                    <div className="flex justify-between">
-                      <span className="font-semibold text-slate-700">End:</span>
-                      <span>{formatDate(batch.end_date)}</span>
+                    {/* Time Range */}
+                    <div className="flex items-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span>{formatTime(batch.start_time)} – {formatTime(batch.end_time)}</span>
                     </div>
 
-                    <div className="flex justify-between">
-                      <span className="font-semibold text-slate-700">Time:</span>
-                      <span>
-                        {formatTime(batch.start_time)} – {formatTime(batch.end_time)}
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between">
-                      <span className="font-semibold text-slate-700">Mode:</span>
-                      <span className="font-medium text-slate-900">{batch.medium}</span>
+                    {/* Timezone */}
+                    <div className="flex items-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path strokeWidth="2" d="M12 21a9 9 0 100-18 9 9 0 000 18zm0-18v18m9-9H3" />
+                      </svg>
+                      <span className="font-medium">{batch.timezone || "N/A"}</span>
                     </div>
                   </div>
                 </div>
@@ -236,7 +255,16 @@ export default function Courses() {
                 <div className="mb-4">
                   {batch.paid_batch ? (
                     <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-700 border border-purple-300">
-                      Paid - {batch.amount ? `₹${batch.amount}` : "Contact us"}
+                      {(() => {
+                        if (!batch.amount) return "Paid - Contact us";
+
+                        let symbol = "";
+                        if (batch.currency === "INR") symbol = "₹";
+                        else if (batch.currency === "USD") symbol = "$";
+                        else symbol = batch.currency ? batch.currency + " " : "";
+
+                        return `Paid - ${symbol}${batch.amount}`;
+                      })()}
                     </span>
                   ) : (
                     <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-teal-100 text-teal-700 border border-teal-300">
