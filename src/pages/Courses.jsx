@@ -173,7 +173,7 @@ export default function Courses() {
                   </div>
 
                   <a
-                    href={`${LMS_COURSE_URL}/${course.name}`}
+                    href={`${LMS_COURSE_URL}?course=${course.name}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -274,7 +274,7 @@ export default function Courses() {
                 </div>
 
                 <a
-                  href={`${LMS_BATCH_URL}/${batch.name}`}
+                  href={`${LMS_BATCH_URL}?batch=${batch.name}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
