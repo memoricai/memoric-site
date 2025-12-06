@@ -15,19 +15,54 @@ export default function Contact() {
     message: ''
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const { firstName, lastName, email, message } = formData;
+
     // Validate required fields
-    if (!formData.firstName || !formData.email || !formData.message) {
+    if (!firstName || !email || !message) {
       toast.error("Please fill all required fields!");
       return;
     }
 
-    // Form is valid
-    console.log('Form submitted:', formData);
-    toast.success("Message sent successfully!");
-    setFormData({ firstName: '', lastName: '', email: '', message: '' }); // reset form
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/method/memoric_frappe.api.contact_us.send_contact_email`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            first_name: firstName,
+            last_name: lastName,
+            email: email,
+            message: message,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || data.exc) {
+        throw new Error(data.message || "Something went wrong");
+      }
+
+      toast.success("Message sent successfully!");
+
+      // Reset form
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        message: "",
+      });
+
+    } catch (error) {
+      console.error("Contact form error:", error);
+      toast.error("Failed to send message. Please try again.");
+    }
   };
 
   const handleChange = (e) => {
@@ -95,11 +130,11 @@ export default function Contact() {
                     <label className="block text-sm font-semibold text-slate-900 mb-2">
                       First Name <span className="text-red-500">*</span>
                     </label>
-                    <Input 
-                      name="firstName" 
+                    <Input
+                      name="firstName"
                       value={formData.firstName}
                       onChange={handleChange}
-                      placeholder="John" 
+                      placeholder="John"
                       className="h-12 border-slate-200 focus:border-slate-900"
                     />
                   </div>
@@ -108,11 +143,11 @@ export default function Contact() {
                     <label className="block text-sm font-semibold text-slate-900 mb-2">
                       Last Name
                     </label>
-                    <Input 
-                      name="lastName" 
+                    <Input
+                      name="lastName"
                       value={formData.lastName}
                       onChange={handleChange}
-                      placeholder="Doe" 
+                      placeholder="Doe"
                       className="h-12 border-slate-200 focus:border-slate-900"
                     />
                   </div>
@@ -122,12 +157,12 @@ export default function Contact() {
                   <label className="block text-sm font-semibold text-slate-900 mb-2">
                     Email Address <span className="text-red-500">*</span>
                   </label>
-                  <Input 
-                    name="email" 
-                    type="email" 
+                  <Input
+                    name="email"
+                    type="email"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="john@example.com" 
+                    placeholder="john@example.com"
                     className="h-12 border-slate-200 focus:border-slate-900"
                   />
                 </div>
@@ -136,16 +171,16 @@ export default function Contact() {
                   <label className="block text-sm font-semibold text-slate-900 mb-2">
                     Message <span className="text-red-500">*</span>
                   </label>
-                  <Textarea 
-                    name="message" 
+                  <Textarea
+                    name="message"
                     value={formData.message}
                     onChange={handleChange}
-                    placeholder="Tell us how we can help you..." 
+                    placeholder="Tell us how we can help you..."
                     className="h-40 border-slate-200 focus:border-slate-900 resize-none"
                   />
                 </div>
 
-                <Button 
+                <Button
                   onClick={handleSubmit}
                   className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6 text-base group cursor-pointer"
                 >
