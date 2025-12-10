@@ -40,6 +40,12 @@ export default function Courses() {
     });
   }
 
+  // ✅ Combine batch date + time → JS Date
+  function getBatchStartDateTime(batch) {
+    if (!batch.start_date || !batch.start_time) return null;
+    return new Date(`${batch.start_date}T${batch.start_time}`);
+  }
+
   // Fetch Courses
   useEffect(() => {
     const fetchCourses = async () => {
@@ -83,12 +89,25 @@ export default function Courses() {
       </div>
     );
 
+  // ✅ Course filters
   const filteredCourses = courses.filter(
     (course) => course.published === 1 && course.custom_is_business_course === 0
   );
-  const filteredBatches = batches.filter(
-    (batch) => batch.published === 1 && batch.custom_is_business_batch === 0
-  );
+
+  // ✅ Batch filters (FUTURE DATE + TIME CHECK)
+  const now = new Date();
+  console.log("current batches", batches)
+  const filteredBatches = batches.filter((batch) => {
+    if (batch.published !== 1) return false;
+    if (batch.custom_is_business_batch !== 0) return false;
+
+    const batchStart = getBatchStartDateTime(batch);
+    if (!batchStart) return false;
+
+    // ✅ Only upcoming batches
+    return batchStart > now;
+  });
+  console.log("Filtered Batches:", filteredBatches);
 
   return (
     <div className="w-full bg-slate-50 py-20">
@@ -214,20 +233,21 @@ export default function Courses() {
                 className="p-6 flex flex-col border-2 border-slate-100 hover:border-slate-900 hover:shadow-xl transition-all duration-300 bg-white h-full"
               >
                 <div className="flex-grow">
-                  <h3 className="text-xl font-bold mb-3 text-slate-900 line-clamp-2">
+                  <h3 className="text-xl font-bold mb-3 text-slate-900 line-clamp-2 min-h-[3.5rem]">
                     {batch.title}
                   </h3>
 
                   {/* ⭐ Seats Left */}
-                  <div className="mb-3">
+                  <div className="mb-3 min-h-[2rem]">
                     <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 border border-yellow-300">
                       {batch.seat_count ? `${batch.seat_count} Seats` : "Unlimited Seats"}
                     </span>
                   </div>
 
-                  <p className="text-sm text-slate-600 mb-4 line-clamp-2">
-                    {batch.description}
+                  <p className="text-sm text-slate-600 mb-4 line-clamp-2 min-h-[2.75rem]">
+                    {batch.description || "\u00A0"}
                   </p>
+
 
                   {/* ⭐ Updated Detailed Block */}
                   <div className="text-sm text-slate-600 space-y-3 mb-2 bg-slate-50 p-4 rounded-lg">
@@ -253,7 +273,7 @@ export default function Courses() {
                       <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path strokeWidth="2" d="M12 21a9 9 0 100-18 9 9 0 000 18zm0-18v18m9-9H3" />
                       </svg>
-                      <span className="font-medium">{batch.timezone || "N/A"}</span>
+                      <span className="font-medium">{batch.timezone || "\u00A0"}</span>
                     </div>
                   </div>
                 </div>
