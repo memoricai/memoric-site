@@ -96,7 +96,6 @@ export default function Courses() {
 
   // ✅ Batch filters (FUTURE DATE + TIME CHECK)
   const now = new Date();
-  console.log("current batches", batches)
   const filteredBatches = batches.filter((batch) => {
     if (batch.published !== 1) return false;
     if (batch.custom_is_business_batch !== 0) return false;
@@ -107,7 +106,6 @@ export default function Courses() {
     // ✅ Only upcoming batches
     return batchStart > now;
   });
-  console.log("Filtered Batches:", filteredBatches);
 
   return (
     <div className="w-full bg-slate-50 py-20">
@@ -250,7 +248,7 @@ export default function Courses() {
 
 
                   {/* ⭐ Updated Detailed Block */}
-                  <div className="text-sm text-slate-600 space-y-3 mb-2 bg-slate-50 p-4 rounded-lg">
+                  <div className="text-sm text-slate-600 space-y-3 bg-slate-50 p-4 rounded-lg">
 
                     {/* Date Range */}
                     <div className="flex items-center gap-2">
@@ -279,43 +277,39 @@ export default function Courses() {
                 </div>
 
                 {/* Price Badge */}
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {batch.paid_batch ? (
-                    <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-700 border border-purple-300">
-                      {(() => {
-                        if (!batch.amount) return "Paid - Contact us";
+                <div>
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {batch.paid_batch ? (
+                      <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-700 border border-purple-300">
+                        {(() => {
+                          if (!batch.amount) return "Paid - Contact us";
+                          let symbol = batch.currency === "INR" ? "₹" : batch.currency === "USD" ? "$" : "";
+                          return `Paid - ${symbol}${batch.amount}`;
+                        })()}
+                      </span>
+                    ) : (
+                      <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-teal-100 text-teal-700 border border-teal-300">
+                        Free
+                      </span>
+                    )}
 
-                        let symbol = "";
-                        if (batch.currency === "INR") symbol = "₹";
-                        else if (batch.currency === "USD") symbol = "$";
-                        else symbol = batch.currency ? batch.currency + " " : "";
+                    {batch.certification === 1 && (
+                      <span className="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700 border border-green-300">
+                        Certificate
+                      </span>
+                    )}
+                  </div>
 
-                        return `Paid - ${symbol}${batch.amount}`;
-                      })()}
-                    </span>
-                  ) : (
-                    <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-teal-100 text-teal-700 border border-teal-300">
-                      Free
-                    </span>
-                  )}
-
-                  {batch.certification === 1 && (
-                    <span className="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700 border border-green-300">
-                      Certificate
-                    </span>
-                  )}
-
+                  <a
+                    href={`${LMS_BATCH_URL}?batch=${batch.name}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6">
+                      Join Batch
+                    </Button>
+                  </a>
                 </div>
-
-                <a
-                  href={`${LMS_BATCH_URL}?batch=${batch.name}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6 cursor-pointer">
-                    Join Batch
-                  </Button>
-                </a>
               </Card>
             ))}
           </div>
