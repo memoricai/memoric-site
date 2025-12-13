@@ -91,14 +91,13 @@ export default function Courses() {
 
   // ✅ Course filters
   const filteredCourses = courses.filter(
-    (course) => course.published === 1 && course.custom_is_business_course === 0
+    (course) => course.published === 1
   );
 
   // ✅ Batch filters (FUTURE DATE + TIME CHECK)
   const now = new Date();
   const filteredBatches = batches.filter((batch) => {
     if (batch.published !== 1) return false;
-    if (batch.custom_is_business_batch !== 0) return false;
 
     const batchStart = getBatchStartDateTime(batch);
     if (!batchStart) return false;
@@ -106,6 +105,7 @@ export default function Courses() {
     // ✅ Only upcoming batches
     return batchStart > now;
   });
+
 
   return (
     <div className="w-full bg-slate-50 py-20">
@@ -125,85 +125,105 @@ export default function Courses() {
         {/* Courses Grid */}
         {filteredCourses.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
-            {filteredCourses.map((course) => (
-              <Card
-                key={course.name}
-                className="p-0 flex flex-col border-2 border-slate-100 hover:border-slate-900 hover:shadow-xl transition-all duration-300 bg-white overflow-hidden h-full"
-              >
-                {/* Image Section */}
-                <div className="w-full h-48 overflow-hidden">
-                  {course.image ? (
-                    <img
-                      src={`${BASE_URL}${course.image}`}
-                      alt={course.title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div
-                      className="w-full h-full flex items-center justify-center text-white text-lg font-bold text-center px-4"
-                      style={{
-                        background: `linear-gradient(180deg, #cba3f5 0%, #000000 100%)`,
-                      }}
-                    >
-                      {course.title}
-                    </div>
-                  )}
-                </div>
-
-                {/* Content Section */}
-                <div className="px-6 pb-6 flex flex-col flex-grow">
-                  <div className="flex-grow">
-
-                    {/* ⭐ Category */}
-                    <Badge className="mb-3 bg-slate-100 text-slate-900 hover:bg-slate-200 font-medium">
-                      {course.category || "\u00A0"}
-                    </Badge>
-
-                    <h3 className="text-xl font-bold mb-3 text-slate-900 line-clamp-2">
-                      {course.title}
-                    </h3>
-
-                    <p className="text-sm text-slate-600 mb-4 line-clamp-3">
-                      {course.short_introduction}
-                    </p>
+            {filteredCourses.map((course) => {
+              const isBusinessCourse = course.custom_is_business_course === 1;
+              return (
+                <Card
+                  key={course.name}
+                  className="p-0 flex flex-col border-2 border-slate-100 hover:border-slate-900 hover:shadow-xl transition-all duration-300 bg-white overflow-hidden h-full"
+                >
+                  {/* Image Section */}
+                  <div className="w-full h-48 overflow-hidden">
+                    {course.image ? (
+                      <img
+                        src={`${BASE_URL}${course.image}`}
+                        alt={course.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div
+                        className="w-full h-full flex items-center justify-center text-white text-lg font-bold text-center px-4"
+                        style={{
+                          background: `linear-gradient(180deg, #cba3f5 0%, #000000 100%)`,
+                        }}
+                      >
+                        {course.title}
+                      </div>
+                    )}
                   </div>
 
-                  {/* Badges */}
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {course.paid_course ? (
-                      <span className="px-3 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-700 border border-purple-300">
-                        Paid – {course.course_price ? `₹${course.course_price}` : "Contact us"}
-                      </span>
+                  {/* Content Section */}
+                  <div className="px-6 pb-6 flex flex-col flex-grow">
+                    <div className="flex-grow">
+
+                      {/* ⭐ Category */}
+                      <Badge className="mb-3 bg-slate-100 text-slate-900 hover:bg-slate-200 font-medium">
+                        {course.category || "\u00A0"}
+                      </Badge>
+
+                      <h3 className="text-xl font-bold mb-3 text-slate-900 line-clamp-2">
+                        {course.title}
+                      </h3>
+
+                      <p className="text-sm text-slate-600 mb-4 line-clamp-3">
+                        {course.short_introduction}
+                      </p>
+                    </div>
+
+                    {/* Badges */}
+                    {isBusinessCourse ? (
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        <span className="px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-900 border border-slate-300">
+                          Corporate
+                        </span>
+                      </div>
                     ) : (
-                      <span className="px-3 py-1 text-xs font-semibold rounded-full bg-teal-100 text-teal-700 border border-teal-300">
-                        Free
-                      </span>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {course.paid_course ? (
+                          <span className="px-3 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-700 border border-purple-300">
+                            Paid – {course.course_price ? `₹${course.course_price}` : "Contact us"}
+                          </span>
+                        ) : (
+                          <span className="px-3 py-1 text-xs font-semibold rounded-full bg-teal-100 text-teal-700 border border-teal-300">
+                            Free
+                          </span>
+                        )}
+
+                        {course.paid_certificate === 1 ? (
+                          <span className="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700 border border-yellow-300">
+                            Paid Certificate
+                          </span>
+                        ) : course.enable_certification === 1 ? (
+                          <span className="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700 border border-green-300">
+                            Certificate
+                          </span>
+                        ) : null}
+                      </div>
                     )}
 
-                    {course.paid_certificate === 1 ? (
-                      <span className="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700 border border-yellow-300">
-                        Paid Certificate
-                      </span>
-                    ) : course.enable_certification === 1 ? (
-                      <span className="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700 border border-green-300">
-                        Certificate
-                      </span>
-                    ) : null}
+
+                    {isBusinessCourse ? (
+                      <a href="#contact">
+                        <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6 cursor-pointer">
+                          Contact Us
+                        </Button>
+                      </a>
+                    ) : (
+                      <a
+                        href={`${LMS_COURSE_URL}?course=${course.name}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6 cursor-pointer">
+                          Enroll Now
+                        </Button>
+                      </a>
+                    )}
 
                   </div>
-
-                  <a
-                    href={`${LMS_COURSE_URL}?course=${course.name}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6 cursor-pointer">
-                      Enroll Now
-                    </Button>
-                  </a>
-                </div>
-              </Card>
-            ))}
+                </Card>
+              )
+            })}
           </div>
         ) : (
           <div className="text-center py-10 text-slate-500 mb-20">
@@ -225,93 +245,114 @@ export default function Courses() {
         {/* Batches Grid */}
         {filteredBatches.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredBatches.map((batch) => (
-              <Card
-                key={batch.name}
-                className="p-6 flex flex-col border-2 border-slate-100 hover:border-slate-900 hover:shadow-xl transition-all duration-300 bg-white h-full"
-              >
-                <div className="flex-grow">
-                  <h3 className="text-xl font-bold mb-3 text-slate-900 line-clamp-2 min-h-[3.5rem]">
-                    {batch.title}
-                  </h3>
+            {filteredBatches.map((batch) => {
+              const isBusinessBatch = batch.custom_is_business_batch === 1;
+              return (
+                <Card
+                  key={batch.name}
+                  className="p-6 flex flex-col border-2 border-slate-100 hover:border-slate-900 hover:shadow-xl transition-all duration-300 bg-white h-full"
+                >
+                  <div className="flex-grow">
+                    <h3 className="text-xl font-bold mb-3 text-slate-900 line-clamp-2 min-h-[3.5rem]">
+                      {batch.title}
+                    </h3>
 
-                  {/* ⭐ Seats Left */}
-                  <div className="mb-3 min-h-[2rem]">
-                    <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 border border-yellow-300">
-                      {batch.seat_count ? `${batch.seat_count} Seats` : "Unlimited Seats"}
-                    </span>
-                  </div>
-
-                  <p className="text-sm text-slate-600 mb-4 line-clamp-2 min-h-[2.75rem]">
-                    {batch.description || "\u00A0"}
-                  </p>
-
-
-                  {/* ⭐ Updated Detailed Block */}
-                  <div className="text-sm text-slate-600 space-y-3 bg-slate-50 p-4 rounded-lg">
-
-                    {/* Date Range */}
-                    <div className="flex items-center gap-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path strokeLinecap="round" strokeWidth="2" d="M8 7V3m8 4V3M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      <span>{formatDate(batch.start_date)} – {formatDate(batch.end_date)}</span>
-                    </div>
-
-                    {/* Time Range */}
-                    <div className="flex items-center gap-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span>{formatTime(batch.start_time)} – {formatTime(batch.end_time)}</span>
-                    </div>
-
-                    {/* Timezone */}
-                    <div className="flex items-center gap-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path strokeWidth="2" d="M12 21a9 9 0 100-18 9 9 0 000 18zm0-18v18m9-9H3" />
-                      </svg>
-                      <span className="font-medium">{batch.timezone || "\u00A0"}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Price Badge */}
-                <div>
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {batch.paid_batch ? (
-                      <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-700 border border-purple-300">
-                        {(() => {
-                          if (!batch.amount) return "Paid - Contact us";
-                          let symbol = batch.currency === "INR" ? "₹" : batch.currency === "USD" ? "$" : "";
-                          return `Paid - ${symbol}${batch.amount}`;
-                        })()}
+                    {/* ⭐ Seats Left */}
+                    <div className="mb-3 min-h-[2rem]">
+                      <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 border border-yellow-300">
+                        {batch.seat_count ? `${batch.seat_count} Seats` : "Unlimited Seats"}
                       </span>
+                    </div>
+
+                    <p className="text-sm text-slate-600 mb-4 line-clamp-2 min-h-[2.75rem]">
+                      {batch.description || "\u00A0"}
+                    </p>
+
+
+                    {/* ⭐ Updated Detailed Block */}
+                    <div className="text-sm text-slate-600 space-y-3 bg-slate-50 p-4 rounded-lg">
+
+                      {/* Date Range */}
+                      <div className="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                          <path strokeLinecap="round" strokeWidth="2" d="M8 7V3m8 4V3M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span>{formatDate(batch.start_date)} – {formatDate(batch.end_date)}</span>
+                      </div>
+
+                      {/* Time Range */}
+                      <div className="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                          <path strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>{formatTime(batch.start_time)} – {formatTime(batch.end_time)}</span>
+                      </div>
+
+                      {/* Timezone */}
+                      <div className="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                          <path strokeWidth="2" d="M12 21a9 9 0 100-18 9 9 0 000 18zm0-18v18m9-9H3" />
+                        </svg>
+                        <span className="font-medium">{batch.timezone || "\u00A0"}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Price Badge */}
+                  <div>
+                    {isBusinessBatch ? (
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        <span className="px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-900 border border-slate-300">
+                          Corporate
+                        </span>
+                      </div>
                     ) : (
-                      <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-teal-100 text-teal-700 border border-teal-300">
-                        Free
-                      </span>
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {batch.paid_batch ? (
+                          <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-700 border border-purple-300">
+                            {(() => {
+                              if (!batch.amount) return "Paid - Contact us";
+                              let symbol = batch.currency === "INR" ? "₹" : batch.currency === "USD" ? "$" : "";
+                              return `Paid - ${symbol}${batch.amount}`;
+                            })()}
+                          </span>
+                        ) : (
+                          <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-teal-100 text-teal-700 border border-teal-300">
+                            Free
+                          </span>
+                        )}
+
+                        {batch.certification === 1 && (
+                          <span className="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700 border border-green-300">
+                            Certificate
+                          </span>
+                        )}
+                      </div>
                     )}
 
-                    {batch.certification === 1 && (
-                      <span className="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700 border border-green-300">
-                        Certificate
-                      </span>
+
+                    {isBusinessBatch ? (
+                      <a href="#contact">
+                        <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6 cursor-pointer">
+                          Contact Us
+                        </Button>
+                      </a>
+                    ) : (
+                      <a
+                        href={`${LMS_BATCH_URL}?batch=${batch.name}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6 cursor-pointer">
+                          Join Batch
+                        </Button>
+                      </a>
                     )}
+
                   </div>
-
-                  <a
-                    href={`${LMS_BATCH_URL}?batch=${batch.name}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6 cursor-pointer">
-                      Join Batch
-                    </Button>
-                  </a>
-                </div>
-              </Card>
-            ))}
+                </Card>
+              );
+})}
           </div>
         ) : (
           <div className="text-center py-10 text-slate-500">
