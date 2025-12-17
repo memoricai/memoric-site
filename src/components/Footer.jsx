@@ -18,8 +18,8 @@ export default function Footer() {
             <div className="flex flex-col gap-2 text-sm">
               <div className="flex items-center gap-2 text-slate-400">
                 <Mail className="w-4 h-4" />
-                <a href="mailto:info@memoricai.in" className="hover:text-white transition-colors">
-                  info@memoricai.in
+                <a href="mailto:support@memoricai.in" className="hover:text-white transition-colors">
+                  support@memoricai.in
                 </a>
               </div>
               <div className="flex items-center gap-2 text-slate-400">
@@ -33,7 +33,7 @@ export default function Footer() {
           <div>
             <h4 className="font-bold mb-4">Quick Links</h4>
             <ul className="space-y-2 text-sm">
-              {["Home", "Courses", "About", "Contact"].map((item) => (
+              {["Home","Services", "Courses", "About", "Contact"].map((item) => (
                 <li key={item}>
                   <a
                     href={`#${item.toLowerCase()}`}

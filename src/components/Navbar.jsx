@@ -21,7 +21,7 @@ export default function Navbar({ setSidebarOpen }) {
         </div>
 
         <nav className="hidden md:flex items-center gap-2">
-          {["Home", "Courses", "About", "Contact"].map((item) => (
+          {["Home", "Services", "Courses", "About", "Contact"].map((item) => (
             <a
               key={item}
               href={`#${item.toLowerCase()}`}

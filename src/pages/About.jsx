@@ -45,9 +45,7 @@ export default function About() {
                 <h2 className="text-3xl font-bold">Our Mission</h2>
               </div>
               <p className="text-lg text-slate-200 leading-relaxed">
-                MemoricAI exists to bridge the gap between AI possibility and practical implementation.
-                We provide education and consulting that respects your intelligence and focuses on real outcomes,
-                helping organizations unlock AI's value while ensuring responsible use.
+                Empowering organizations to adopt AI responsibly through expert training, strategic guidance, and applied research.
               </p>
             </Card>
           </div>
@@ -104,11 +102,11 @@ export default function About() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="p-8 text-center border-2 border-slate-100 hover:border-slate-900 hover:shadow-xl transition-all duration-300">
               <div className="w-16 h-16 bg-slate-900 rounded-lg flex items-center justify-center mx-auto mb-6">
-                <Lightbulb className="w-8 h-8 text-white" />
+                <Target className="w-8 h-8 text-white" />
               </div>
-              <h4 className="font-bold text-xl text-slate-900 mb-3">Clarity</h4>
+              <h4 className="font-bold text-xl text-slate-900 mb-3">Quality</h4>
               <p className="text-sm text-slate-600 leading-relaxed">
-                We communicate complex AI concepts simply and accessibly, ensuring everyone can understand and apply them.
+                We deliver exceptional work that drives real results, maintaining the highest standards in everything we do.
               </p>
             </Card>
             
@@ -116,19 +114,21 @@ export default function About() {
               <div className="w-16 h-16 bg-slate-900 rounded-lg flex items-center justify-center mx-auto mb-6">
                 <Award className="w-8 h-8 text-white" />
               </div>
-              <h4 className="font-bold text-xl text-slate-900 mb-3">Integrity</h4>
+              <h4 className="font-bold text-xl text-slate-900 mb-3">Ethics</h4>
               <p className="text-sm text-slate-600 leading-relaxed">
-                We prioritize honest, ethical guidance over flashy solutions, building trust through transparency.
+                We prioritize ethical and honest practices, to build trust through reliable and transparent work.
               </p>
             </Card>
             
+            
+            
             <Card className="p-8 text-center border-2 border-slate-100 hover:border-slate-900 hover:shadow-xl transition-all duration-300">
               <div className="w-16 h-16 bg-slate-900 rounded-lg flex items-center justify-center mx-auto mb-6">
-                <Target className="w-8 h-8 text-white" />
+                <Lightbulb className="w-8 h-8 text-white" />
               </div>
-              <h4 className="font-bold text-xl text-slate-900 mb-3">Excellence</h4>
+              <h4 className="font-bold text-xl text-slate-900 mb-3">Clarity</h4>
               <p className="text-sm text-slate-600 leading-relaxed">
-                We deliver exceptional work that drives real results, maintaining the highest standards in everything we do.
+                We communicate complex AI concepts simply and accessibly, ensuring everyone can understand and apply them.
               </p>
             </Card>
           </div>

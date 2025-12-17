@@ -3,6 +3,7 @@ import Home from "./Home";
 import Courses from "./Courses";
 import About from "./About";
 import Contact from "./Contact";
+import Services from "./Services";
 
 export default function Sections() {
   return (
@@ -10,17 +11,20 @@ export default function Sections() {
       <section id="home">
         <Home />
       </section>
-
-      <section id="courses" className="scroll-mt-16 md:scroll-mt-20">
+      
+      <section id="services">
+        <Services />
+      </section>
+      
+      <section id="courses">
         <Courses />
       </section>
-
-
-      <section id="about" className="scroll-mt-20">
+      
+      <section id="about">
         <About />
       </section>
-
-      <section id="contact" className="scroll-mt-20">
+      
+      <section id="contact">
         <Contact />
       </section>
     </div>

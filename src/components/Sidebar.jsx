@@ -24,7 +24,7 @@ export default function Sidebar({ setOpen }) {
         </div>
 
         <nav className="flex flex-col p-4 gap-2">
-          {["Home", "Courses", "About", "Contact"].map((item) => (
+          {["Home","Services", "Courses", "About", "Contact"].map((item) => (
             <a
               key={item}
               href={`#${item.toLowerCase()}`}
