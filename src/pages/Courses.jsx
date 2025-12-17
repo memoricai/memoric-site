@@ -127,10 +127,9 @@ export default function Courses() {
 
         {/* COURSES SECTION */}
         <div className="text-center mb-16">
-          <Badge className="mb-4 bg-slate-900 text-white px-4 py-1.5">Our Courses</Badge>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-slate-900">
-            Master AI with Expert-Led Training
-          </h1>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 mb-4 sm:mb-6 tracking-tight">
+                        Our Courses
+                    </h2>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto">
             Practical courses designed to help you implement AI effectively.
           </p>
