@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import CompanyLogosSlider from '../components/CompanyLogosSlider';
 
 export default function Services() {
     return (
@@ -60,6 +61,7 @@ export default function Services() {
                 </div>
 
             </div>
+            <CompanyLogosSlider />
         </div>
     );
 }

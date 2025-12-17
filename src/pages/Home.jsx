@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import Testimonials from "../components/Testimonials";
+import HeroIllustration from "../components/HeroIllustration";
 
 export default function Home() {
   return (
@@ -35,17 +36,14 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Right Illustration */}
+          {/* Right Illustration - Now with animated announcements */}
           <div className="flex-1">
-            <Card className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl overflow-hidden max-w-md w-full h-80 md:h-96 flex items-center justify-center">
-              <div className="text-white/60 font-semibold text-center px-4">
-                [Hero Illustration]
-              </div>
-            </Card>
+            <HeroIllustration />
           </div>
 
         </div>
       </div>
+      
       <div className="mt-24">
         <h2 className="text-3xl font-bold text-slate-900 text-center mb-8 md:mb-12">
          Testimonials
