@@ -11,9 +11,9 @@ const LMS_COURSE_URL = import.meta.env.VITE_LMS_COURSE_URL;
 const LMS_BATCH_URL = import.meta.env.VITE_LMS_BATCH_URL;
 
 export default function Courses() {
-  const [courses, setCourses] = useState([]);
+  // const [courses, setCourses] = useState([]);
   const [batches, setBatches] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [batchLoading, setBatchLoading] = useState(true);
 
   // ⭐ Date Formatter
@@ -40,29 +40,46 @@ export default function Courses() {
     });
   }
 
-  // ✅ Combine batch date + time → JS Date
   function getBatchStartDateTime(batch) {
     if (!batch.start_date || !batch.start_time) return null;
     return new Date(`${batch.start_date}T${batch.start_time}`);
   }
 
-  // Fetch Courses
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const res = await fetch(COURSE_API_URL, {
-          headers: { Authorization: `token ${API_TOKEN}` },
-        });
-        const data = await res.json();
-        setCourses(data.data);
-      } catch (err) {
-        console.error("Error fetching courses:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCourses();
-  }, []);
+  function getDurationInDays(startDate, endDate) {
+    if (!startDate || !endDate) return null;
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    // Reset time to avoid timezone issues
+    start.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
+
+    const diffTime = end - start;
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+    // Inclusive count
+    return diffDays + 1;
+  }
+
+
+  // // Fetch Courses
+  // useEffect(() => {
+  //   const fetchCourses = async () => {
+  //     try {
+  //       const res = await fetch(COURSE_API_URL, {
+  //         headers: { Authorization: `token ${API_TOKEN}` },
+  //       });
+  //       const data = await res.json();
+  //       setCourses(data.data);
+  //     } catch (err) {
+  //       console.error("Error fetching courses:", err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchCourses();
+  // }, []);
 
   // Fetch Batches
   useEffect(() => {
@@ -82,30 +99,30 @@ export default function Courses() {
     fetchBatches();
   }, []);
 
-  if (loading || batchLoading)
+  if (batchLoading)
     return (
       <div className="text-center py-20 text-slate-500">
         <div className="animate-pulse">Loading content...</div>
       </div>
     );
 
-  // ✅ Course filters
-  const filteredCourses = courses.filter(
-    (course) => course.published === 1
-  );
+  // // ✅ Course filters
+  // const filteredCourses = courses.filter(
+  //   (course) => course.published === 1
+  // );
 
   // ✅ Batch filters (FUTURE DATE + TIME CHECK)
   const now = new Date();
-  const filteredBatches = batches.filter((batch) => {
-    if (batch.published !== 1) return false;
 
+  const filteredBatches = batches.filter((batch) => {
+    if (batch.custom_show_on_site !== 1) return false;
     const batchStart = getBatchStartDateTime(batch);
     if (!batchStart) return false;
 
-    // ✅ Only upcoming batches
     return batchStart > now;
   });
-
+  console.log("All Batches:", batches);
+  console.log("Filtered Batches:", filteredBatches);
 
   return (
     <div className="w-full bg-slate-50 py-20">
@@ -123,105 +140,143 @@ export default function Courses() {
         </div>
 
         {/* Courses Grid */}
-        {filteredCourses.length > 0 ? (
+        {filteredBatches.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
-            {filteredCourses.map((course) => {
-              const isBusinessCourse = course.custom_is_business_course === 1;
+            {filteredBatches.map((batch) => {
               return (
                 <Card
-                  key={course.name}
-                  className="p-0 flex flex-col border-2 border-slate-100 hover:border-slate-900 hover:shadow-xl transition-all duration-300 bg-white overflow-hidden h-full"
+                  key={batch.name}
+                  className="flex flex-col h-full
+             rounded-xl border-2 border-slate-100
+             bg-white shadow-sm
+             hover:border-slate-900 hover:shadow-xl
+             transition-all duration-300"
                 >
-                  {/* Image Section */}
-                  <div className="w-full h-48 overflow-hidden">
-                    {course.image ? (
-                      <img
-                        src={`${BASE_URL}${course.image}`}
-                        alt={course.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div
-                        className="w-full h-full flex items-center justify-center text-white text-lg font-bold text-center px-4"
-                        style={{
-                          background: `linear-gradient(180deg, #cba3f5 0%, #000000 100%)`,
-                        }}
-                      >
-                        {course.title}
-                      </div>
-                    )}
-                  </div>
+                  {/* ===== Main Content ===== */}
+                  <div className="flex flex-col gap-4 px-5 flex-grow">
 
-                  {/* Content Section */}
-                  <div className="px-6 pb-6 flex flex-col flex-grow">
-                    <div className="flex-grow">
+                    {/* ===== Title ===== */}
+                    <h3 className="text-center text-sm sm:text-base font-bold text-slate-900 leading-snug">
+                      {batch.title}
+                    </h3>
 
-                      {/* ⭐ Category */}
-                      <Badge className="mb-3 bg-slate-100 text-slate-900 hover:bg-slate-200 font-medium">
-                        {course.category || "\u00A0"}
-                      </Badge>
-
-                      <h3 className="text-xl font-bold mb-3 text-slate-900 line-clamp-2">
-                        {course.title}
-                      </h3>
-
-                      <p className="text-sm text-slate-600 mb-4 line-clamp-3">
-                        {course.short_introduction}
-                      </p>
+                    {/* ===== Duration · Mode · Price ===== */}
+                    <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs text-slate-700">
+                      <span className="font-semibold text-slate-900 underline">
+                        {getDurationInDays(batch.start_date, batch.end_date)} day
+                        {getDurationInDays(batch.start_date, batch.end_date) > 1 ? "s" : ""}
+                      </span>
+                      <span>·</span>
+                      <span>{batch.medium || "Online"} course</span>
+                      <span className="hidden sm:inline">·</span>
+                      <span className="font-semibold text-slate-900">
+                        {batch.paid_batch
+                          ? `${batch.currency === "INR" ? "₹" : "$"}${batch.amount}`
+                          : "Free"}
+                      </span>
                     </div>
 
-                    {/* Badges */}
-                    {isBusinessCourse ? (
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        <span className="px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-900 border border-slate-300">
-                          Corporate
+                    {/* ===== Date & Time ===== */}
+                    <div className="flex flex-col items-center gap-1 text-xs text-slate-600">
+
+                      {/* Date */}
+                      <div className="flex items-center gap-1.5">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="w-3.5 h-3.5 text-slate-700"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                        >
+                          <path strokeLinecap="round" strokeWidth="2"
+                            d="M8 7V3m8 4V3M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span className="font-medium text-slate-700">
+                          {formatDate(batch.start_date)} – {formatDate(batch.end_date)}
                         </span>
                       </div>
-                    ) : (
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {course.paid_course ? (
-                          <span className="px-3 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-700 border border-purple-300">
-                            Paid – {course.course_price ? `₹${course.course_price}` : "Contact us"}
-                          </span>
-                        ) : (
-                          <span className="px-3 py-1 text-xs font-semibold rounded-full bg-teal-100 text-teal-700 border border-teal-300">
-                            Free
-                          </span>
-                        )}
 
-                        {course.paid_certificate === 1 ? (
-                          <span className="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700 border border-yellow-300">
-                            Paid Certificate
-                          </span>
-                        ) : course.enable_certification === 1 ? (
-                          <span className="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700 border border-green-300">
-                            Certificate
-                          </span>
-                        ) : null}
+                      {/* Time */}
+                      <div className="flex items-center gap-1.5">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="w-3.5 h-3.5 text-slate-700"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                        >
+                          <path strokeWidth="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>
+                          {formatTime(batch.start_time)} – {formatTime(batch.end_time)} {batch.timezone}
+                        </span>
                       </div>
-                    )}
+                    </div>
 
+                    {/* ===== Details Box ===== */}
+                    <div className="flex flex-col gap-3
+                    border border-slate-200 rounded-lg
+                    bg-slate-50 p-4 text-xs">
 
-                    {isBusinessCourse ? (
-                      <a href="#contact">
-                        <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6 cursor-pointer">
-                          Contact Us
-                        </Button>
-                      </a>
-                    ) : (
+                      <div>
+                        <div className="font-semibold text-slate-900 mb-0.5">
+                          Course Outline
+                        </div>
+                        <div className="text-slate-600 leading-relaxed line-clamp-3">
+                          {batch.description || "Brief description of the course"}
+                        </div>
+                      </div>
+
+                      <div className="text-slate-600">
+                        <span className="font-semibold text-slate-900">Instructor:</span>{" "}
+                        Dr Rahul De, Prof (retd) and former Dean IIM Bangalore
+                      </div>
+
+                      <div className="text-slate-600">
+                        <span className="font-semibold text-slate-900">Prerequisite:</span>{" "}
+                        {batch.custom_prerequisite || "None"}
+                      </div>
+
+                      <div className="text-slate-600">
+                        <span className="font-semibold text-slate-900">Seats:</span>{" "}
+                        {batch.seat_count || "Unlimited"}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ===== CTA ===== */}
+                  <div className="p-4 py-0">
+                    {batch.published === 1 ? (
                       <a
-                        href={`${LMS_COURSE_URL}?course=${course.name}`}
+                        href={`${LMS_BATCH_URL}?batch=${batch.name}`}
                         target="_blank"
                         rel="noopener noreferrer"
+                        className="block"
                       >
-                        <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6 cursor-pointer">
+                        <Button
+                          className="w-full bg-slate-900 hover:bg-slate-800
+                     text-white font-semibold py-4
+                     rounded-lg shadow-md hover:shadow-lg
+                     transition-all duration-300"
+                        >
                           Enroll Now
                         </Button>
                       </a>
+                    ) : (
+                      <Button
+                        disabled
+                        className="w-full py-4 rounded-lg
+                   bg-slate-200 text-slate-500
+                   font-semibold cursor-not-allowed"
+                      >
+                        Coming Soon
+                      </Button>
                     )}
-
                   </div>
                 </Card>
+
+
               )
             })}
           </div>
@@ -232,7 +287,7 @@ export default function Courses() {
         )}
 
         {/* BATCHES SECTION */}
-        <div className="text-center mb-12">
+        {/* <div className="text-center mb-12">
           <Badge className="mb-4 bg-slate-900 text-white px-4 py-1.5">Upcoming Batches</Badge>
           <h2 className="text-3xl md:text-4xl font-bold mb-2 text-slate-900">
             Join a Live Batch
@@ -240,11 +295,11 @@ export default function Courses() {
           <p className="text-lg text-slate-600 max-w-2xl mx-auto">
             Attend instructor-led live classes and interactive sessions.
           </p>
-        </div>
+        </div> */}
 
         {/* Batches Grid */}
-        {filteredBatches.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* {filteredBatches.length > 0 ? ( */}
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredBatches.map((batch) => {
               const isBusinessBatch = batch.custom_is_business_batch === 1;
               return (
@@ -258,48 +313,48 @@ export default function Courses() {
                     </h3>
 
                     {/* ⭐ Seats Left */}
-                    <div className="mb-3 min-h-[2rem]">
+        {/* <div className="mb-3 min-h-[2rem]">
                       <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 border border-yellow-300">
                         {batch.seat_count ? `${batch.seat_count} Seats` : "Unlimited Seats"}
                       </span>
-                    </div>
+                    </div> */}
 
-                    <p className="text-sm text-slate-600 mb-4 line-clamp-2 min-h-[2.75rem]">
+        {/* <p className="text-sm text-slate-600 mb-4 line-clamp-2 min-h-[2.75rem]">
                       {batch.description || "\u00A0"}
-                    </p>
+                    </p> */}
 
 
-                    {/* ⭐ Updated Detailed Block */}
-                    <div className="text-sm text-slate-600 space-y-3 bg-slate-50 p-4 rounded-lg">
+        {/* ⭐ Updated Detailed Block */}
+        {/* <div className="text-sm text-slate-600 space-y-3 bg-slate-50 p-4 rounded-lg"> */}
 
-                      {/* Date Range */}
-                      <div className="flex items-center gap-2">
+        {/* Date Range */}
+        {/* <div className="flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                           <path strokeLinecap="round" strokeWidth="2" d="M8 7V3m8 4V3M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                         <span>{formatDate(batch.start_date)} – {formatDate(batch.end_date)}</span>
-                      </div>
+                      </div> */}
 
-                      {/* Time Range */}
-                      <div className="flex items-center gap-2">
+        {/* Time Range */}
+        {/* <div className="flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                           <path strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <span>{formatTime(batch.start_time)} – {formatTime(batch.end_time)}</span>
-                      </div>
+                      </div> */}
 
-                      {/* Timezone */}
-                      <div className="flex items-center gap-2">
+        {/* Timezone */}
+        {/* <div className="flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                           <path strokeWidth="2" d="M12 21a9 9 0 100-18 9 9 0 000 18zm0-18v18m9-9H3" />
                         </svg>
                         <span className="font-medium">{batch.timezone || "\u00A0"}</span>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
 
-                  {/* Price Badge */}
-                  <div>
+        {/* Price Badge */}
+        {/* <div>
                     {isBusinessBatch ? (
                       <div className="flex flex-wrap gap-2 mb-3">
                         <span className="px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-900 border border-slate-300">
@@ -328,10 +383,10 @@ export default function Courses() {
                           </span>
                         )}
                       </div>
-                    )}
+                    )} */}
 
 
-                    {isBusinessBatch ? (
+        {/* {isBusinessBatch ? (
                       <a href="#contact">
                         <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-6 cursor-pointer">
                           Contact Us
@@ -353,12 +408,12 @@ export default function Courses() {
                 </Card>
               );
 })}
-          </div>
-        ) : (
-          <div className="text-center py-10 text-slate-500">
-            No upcoming batches at the moment.
-          </div>
-        )}
+          </div> */}
+        {/* ) : ( */}
+        {/* <div className="text-center py-10 text-slate-500"> */}
+        {/* No upcoming batches at the moment. */}
+        {/* </div> */}
+        {/* )} */}
 
       </div>
     </div>
