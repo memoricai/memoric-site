@@ -26,12 +26,6 @@ export default function About() {
         {/* Header */}
         <div className="text-center">
           <Badge className="mb-4 bg-slate-900 text-white px-4 py-1.5">About Us</Badge>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-slate-900">
-            Building the Future with Responsible AI
-          </h1>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            We bridge the gap between AI innovation and practical business value
-          </p>
         </div>
 
         {/* Mission */}

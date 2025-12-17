@@ -11,14 +11,16 @@ export default function Contact() {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
+    organization: '',
     email: '',
     message: ''
   });
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { firstName, lastName, email, message } = formData;
+    const { firstName, lastName, organization, email, message } = formData;
 
     // Validate required fields
     if (!firstName || !email || !message) {
@@ -151,6 +153,19 @@ export default function Contact() {
                       className="h-12 border-slate-200 focus:border-slate-900"
                     />
                   </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-900 mb-2">
+                    Organization
+                  </label>
+                  <Input
+                    name="organization"
+                    value={formData.organization}
+                    onChange={handleChange}
+                    placeholder="Your company or institution"
+                    className="h-12 border-slate-200 focus:border-slate-900"
+                  />
                 </div>
 
                 <div>

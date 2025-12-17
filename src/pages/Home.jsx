@@ -33,33 +33,6 @@ export default function Home() {
             <p className="text-lg md:text-xl text-slate-300 leading-relaxed max-w-2xl">
               AI literacy and fluency training to build practical, internal skills for automation that works. Bridge the gap between AI possibility and practical implementation.
             </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button
-                onClick={() => {
-                  const element = document.getElementById('courses');
-                  if (element) {
-                    element.scrollIntoView({ behavior: 'smooth' });
-                  }
-                }}
-                className="bg-white text-slate-900 hover:bg-slate-100 px-8 py-6 text-base font-semibold group cursor-pointer"
-              >
-                Explore Courses
-                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <Button
-                onClick={() => {
-                  const element = document.getElementById('contact');
-                  if (element) {
-                    element.scrollIntoView({ behavior: 'smooth' });
-                  }
-                }}
-                variant="outline"
-                className="border-white/30 text-slate-900 hover:bg-white/10 px-8 py-6 text-base font-semibold cursor-pointer"
-              >
-                Contact Us
-              </Button>
-            </div>
           </div>
 
           {/* Right Illustration */}

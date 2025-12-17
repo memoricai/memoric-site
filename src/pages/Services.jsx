@@ -52,7 +52,7 @@ export default function Services() {
 
                 {/* Call to Action */}
                 <div className="text-center mt-16">
-                    <a href="mailto:support@memoricai.in">
+                    <a href="#contact">
                         <Button className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-4 text-lg font-medium rounded-lg shadow-lg hover:shadow-xl transition duration-300">
                             Contact Us
                         </Button>
