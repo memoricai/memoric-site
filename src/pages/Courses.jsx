@@ -3,11 +3,10 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-const COURSE_API_URL = import.meta.env.VITE_COURSE_API_URL;
+// const COURSE_API_URL = import.meta.env.VITE_COURSE_API_URL;
 const BATCH_API_URL = import.meta.env.VITE_BATCH_API_URL;
 const API_TOKEN = import.meta.env.VITE_COURSE_API_TOKEN;
-const BASE_URL = import.meta.env.VITE_BASE_URL;
-const LMS_COURSE_URL = import.meta.env.VITE_LMS_COURSE_URL;
+// const LMS_COURSE_URL = import.meta.env.VITE_LMS_COURSE_URL;
 const LMS_BATCH_URL = import.meta.env.VITE_LMS_BATCH_URL;
 
 export default function Courses() {
@@ -89,7 +88,7 @@ export default function Courses() {
           headers: { Authorization: `token ${API_TOKEN}` },
         });
         const data = await res.json();
-        setBatches(data.data);
+        setBatches(data.message);
       } catch (err) {
         console.error("Error fetching batches:", err);
       } finally {
@@ -121,8 +120,6 @@ export default function Courses() {
 
     return batchStart > now;
   });
-  console.log("All Batches:", batches);
-  console.log("Filtered Batches:", filteredBatches);
 
   return (
     <div className="w-full bg-slate-50 py-20">
@@ -143,6 +140,7 @@ export default function Courses() {
         {filteredBatches.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
             {filteredBatches.map((batch) => {
+              const instructors = batch.instructors || [];
               return (
                 <Card
                   key={batch.name}
@@ -156,7 +154,7 @@ export default function Courses() {
                   <div className="flex flex-col gap-4 px-5 flex-grow">
 
                     {/* ===== Title ===== */}
-                    <h3 className="text-center text-sm sm:text-base font-bold text-slate-900 leading-snug">
+                    <h3 className="text-center text-xl font-bold sm:text-base font-bold text-slate-900 leading-snug">
                       {batch.title}
                     </h3>
 
@@ -230,7 +228,17 @@ export default function Courses() {
 
                       <div className="text-slate-600">
                         <span className="font-semibold text-slate-900">Instructor:</span>{" "}
-                        Dr Rahul De, Prof (retd) and former Dean IIM Bangalore
+                        {instructors?.length > 0 ? (
+                          instructors.map((inst, idx) => (
+                            <span key={inst.id}>
+                              {inst.full_name}
+                              {inst.bio ? `, ${inst.bio}` : ""}
+                              {idx < instructors.length - 1 ? " | " : ""}
+                            </span>
+                          ))
+                        ) : (
+                          "Instructor details coming soon"
+                        )}
                       </div>
 
                       <div className="text-slate-600">
