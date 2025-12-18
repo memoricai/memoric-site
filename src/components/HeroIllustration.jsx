@@ -76,12 +76,22 @@ export default function HeroIllustration() {
   /* ---------------- GIF only ---------------- */
   if (!batchDetails && heroData?.hero_gifimage) {
     return (
-      <div className="relative w-full h-64 md:h-80 lg:h-96">
+      <div className="
+        relative 
+        w-full 
+        max-w-sm mx-auto 
+        h-72 sm:h-80 md:h-96
+      ">
+
         <Card className="h-full bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-2xl flex items-center justify-center p-4">
           <img
             src={`${BASE_URL}${heroData.hero_gifimage}`}
             alt="Announcement visual"
-            className="w-full h-full object-contain"
+            className="
+              w-full h-full 
+              object-cover 
+              rounded-xl
+            "
           />
         </Card>
       </div>

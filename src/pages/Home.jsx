@@ -26,19 +26,31 @@ export default function Home() {
                 <span className="text-xs md:text-sm font-medium">AI Training & Consulting</span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                Transform Your Organization by
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r 
-                               from-blue-400 to-purple-400 mt-1 md:mt-2">
-                  Strengthening AI capabilities
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold lg:font-bold leading-tight text-white">
+                {/* Mobile layout */}
+                <span className="block lg:hidden text-center">
+                  <span className="block font-semibold">Transform Your Organization</span>
+                  <span className="block text-slate-300 font-medium text-base sm:text-lg my-1">by</span>
+                  <span className="block font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+                    Strengthening AI capabilities
+                  </span>
+                </span>
+
+                {/* Desktop layout */}
+                <span className="hidden lg:block">
+                  Transform Your Organization by
+                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 mt-2">
+                    Strengthening AI capabilities
+                  </span>
                 </span>
               </h1>
 
               <p className="text-base md:text-lg lg:text-xl text-slate-300 leading-relaxed 
-                          max-w-2xl pr-0 lg:pr-8">
-                AI literacy and fluency training to build practical, internal skills for automation 
+              max-w-2xl pr-0 lg:pr-8 text-center lg:text-left mx-auto lg:mx-0">
+                AI literacy and fluency training to build practical, internal skills for automation
                 that works. Bridge the gap between AI possibility and practical implementation.
               </p>
+
             </div>
 
             {/* Right Illustration - Takes 1 column on desktop (33.33%) */}
@@ -49,7 +61,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      
+
       {/* Testimonials Section */}
       <div className="py-12 md:py-16 lg:py-24 bg-slate-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
