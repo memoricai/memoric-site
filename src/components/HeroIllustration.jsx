@@ -14,12 +14,14 @@ export default function HeroIllustration() {
   useEffect(() => {
     const fetchHeroSettings = async () => {
       try {
+        setLoading(true);
         const response = await fetch(
           `${BASE_URL}/api/method/frappe.client.get?doctype=Memoric%20Settings&name=Memoric%20Settings`,
           { headers: { Authorization: `token ${API_TOKEN}` } }
         );
         const data = await response.json();
         setHeroData(data.message);
+        console.log('Hero Settings Data:', data.message);
 
         if (data.message?.hero_batch) {
           fetchBatchDetails(data.message.hero_batch);
