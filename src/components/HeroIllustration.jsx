@@ -5,19 +5,19 @@ import { Calendar, Clock, Users, Sparkles } from 'lucide-react';
 
 const API_TOKEN = import.meta.env.VITE_COURSE_API_TOKEN;
 const BASE_URL = import.meta.env.VITE_BASE_URL;
+const HERO_API_URL = import.meta.env.VITE_HERO_API_URL;
 
 export default function HeroIllustration() {
   const [heroData, setHeroData] = useState(null);
   const [batchDetails, setBatchDetails] = useState(null);
   const [loading, setLoading] = useState(true);
-  const HERO_URL = `${BASE_URL}/api/method/memoric_frappe.api.memoric_settings.get_hero_announcement`
 
   useEffect(() => {
     const fetchHeroSettings = async () => {
       try {
         setLoading(true);
         const response = await fetch(
-          HERO_URL,
+          HERO_API_URL,
           {
             headers: {
               "Authorization": `token ${API_TOKEN}`,
