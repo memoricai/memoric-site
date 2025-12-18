@@ -7,6 +7,8 @@ const getLogoUrl = (logo) => {
   return `${import.meta.env.VITE_BASE_URL}${logo}`;
 };
 
+const COMPANY_API_URL = import.meta.env.VITE_COMPANY_API_URL;
+
 export default function CompanyLogosSlider() {
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -49,7 +51,7 @@ export default function CompanyLogosSlider() {
     const fetchCompanies = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_BASE_URL}/api/resource/Memoric%20Company?fields=["name","company_logo"]`,
+          `${COMPANY_API_URL}`,
           {
             headers: {
               Authorization: `token ${import.meta.env.VITE_COURSE_API_TOKEN}`,
