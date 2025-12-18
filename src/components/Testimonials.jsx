@@ -11,6 +11,7 @@ export default function Testimonials() {
   const [animating, setAnimating] = useState(false);
   const [direction, setDirection] = useState("right");
   const [loading, setLoading] = useState(true);
+  const [expandedCards, setExpandedCards] = useState({});
 
   useEffect(() => {
     const fetchTestimonials = async () => {
@@ -49,7 +50,16 @@ export default function Testimonials() {
         return nextIndex;
       });
       setAnimating(false);
+      // Reset expanded state when changing testimonial
+      setExpandedCards({});
     }, 500);
+  };
+
+  const toggleExpanded = (field) => {
+    setExpandedCards(prev => ({
+      ...prev,
+      [field]: !prev[field]
+    }));
   };
 
   if (loading) {
@@ -57,7 +67,7 @@ export default function Testimonials() {
       <div className="relative max-w-5xl mx-auto px-4 py-8">
         <div className="animate-pulse flex items-center justify-center gap-6">
           <div className="w-12 h-12 bg-slate-200 rounded-full"></div>
-          <div className="flex-1 h-64 bg-slate-200 rounded-2xl"></div>
+          <div className="flex-1 h-80 bg-slate-200 rounded-2xl"></div>
           <div className="w-12 h-12 bg-slate-200 rounded-full"></div>
         </div>
       </div>
@@ -73,6 +83,22 @@ export default function Testimonials() {
   }
 
   const t = testimonials[index];
+
+  // Helper function to check if text needs truncation
+  const needsTruncation = (text, maxLength) => {
+    return text && text.length > maxLength;
+  };
+
+  // Helper function to truncate text
+  const truncateText = (text, maxLength) => {
+    if (!text || text.length <= maxLength) return text;
+    return text.slice(0, maxLength) + "...";
+  };
+
+  // Content limits
+  const QUOTE_MAX_LENGTH = 80;
+  const CONTENT_MAX_LENGTH_MOBILE = 100;
+  const CONTENT_MAX_LENGTH_DESKTOP = 200;
 
   return (
     <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
@@ -91,7 +117,7 @@ export default function Testimonials() {
           <ChevronLeft className="w-6 h-6" />
         </button>
 
-        {/* Testimonial Card */}
+        {/* Testimonial Card - FIXED HEIGHT */}
         <div className="flex-1 overflow-hidden">
           <div
             className={`transition-all duration-500 ${
@@ -103,8 +129,9 @@ export default function Testimonials() {
             }`}
           >
             <Card className="p-8 lg:p-10 border-2 border-slate-100 hover:border-slate-900 
-                           transition-all duration-300 bg-white shadow-lg">
-              <div className="flex flex-col lg:flex-row items-start gap-6 lg:gap-8">
+                           transition-all duration-300 bg-white shadow-lg
+                           h-[360px] lg:h-[340px] flex flex-col">
+              <div className="flex flex-col lg:flex-row items-start gap-6 lg:gap-8 h-full">
                 {/* Avatar/Quote Icon */}
                 <div className="flex-shrink-0">
                   {t.avatar ? (
@@ -127,17 +154,46 @@ export default function Testimonials() {
                   </div>
                 </div>
 
-                {/* Content */}
-                <div className="flex-1 min-w-0">
+                {/* Content - Scrollable if needed */}
+                <div className="flex-1 min-w-0 flex flex-col h-full overflow-hidden">
+                  {/* Quote - Fixed height, truncated */}
                   {t.quote && (
-                    <h4 className="text-xl font-bold text-slate-900 mb-3">
-                      "{t.quote}"
-                    </h4>
+                    <div className="mb-3">
+                      <h4 className="text-xl font-bold text-slate-900 line-clamp-2">
+                        "{needsTruncation(t.quote, QUOTE_MAX_LENGTH) && !expandedCards.quote
+                          ? truncateText(t.quote, QUOTE_MAX_LENGTH)
+                          : t.quote}"
+                      </h4>
+                      {needsTruncation(t.quote, QUOTE_MAX_LENGTH) && (
+                        <button
+                          onClick={() => toggleExpanded('quote')}
+                          className="text-sm text-slate-900 font-semibold hover:underline mt-1"
+                        >
+                          {expandedCards.quote ? "Show less" : "Read more"}
+                        </button>
+                      )}
+                    </div>
                   )}
-                  <p className="text-base lg:text-lg text-slate-700 italic mb-6 leading-relaxed">
-                    "{t.content}"
-                  </p>
-                  <div className="border-t border-slate-100 pt-4">
+
+                  {/* Content - Scrollable area */}
+                  <div className="flex-1 overflow-y-auto mb-4 pr-2 custom-scrollbar">
+                    <p className="text-base lg:text-lg text-slate-700 italic leading-relaxed">
+                      "{needsTruncation(t.content, CONTENT_MAX_LENGTH_DESKTOP) && !expandedCards.content
+                        ? truncateText(t.content, CONTENT_MAX_LENGTH_DESKTOP)
+                        : t.content}"
+                    </p>
+                    {needsTruncation(t.content, CONTENT_MAX_LENGTH_DESKTOP) && (
+                      <button
+                        onClick={() => toggleExpanded('content')}
+                        className="text-sm text-slate-900 font-semibold hover:underline mt-2"
+                      >
+                        {expandedCards.content ? "Show less" : "Read more"}
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Author Info - Fixed at bottom */}
+                  <div className="border-t border-slate-100 pt-4 mt-auto flex-shrink-0">
                     <h5 className="font-bold text-lg text-slate-900">{t.author}</h5>
                     <p className="text-sm text-slate-600 font-medium mt-1">
                       {t.role}
@@ -164,7 +220,7 @@ export default function Testimonials() {
         </button>
       </div>
 
-      {/* Mobile Layout */}
+      {/* Mobile Layout - FIXED HEIGHT */}
       <div className="md:hidden">
         <div
           className={`transition-all duration-500 ${
@@ -176,8 +232,9 @@ export default function Testimonials() {
           }`}
         >
           <Card className="p-6 border-2 border-slate-100 hover:border-slate-900 
-                         transition-all duration-300 bg-white shadow-lg">
-            <div className="flex flex-col items-center text-center gap-4">
+                         transition-all duration-300 bg-white shadow-lg
+                         h-[420px] flex flex-col">
+            <div className="flex flex-col items-center text-center gap-4 h-full">
               {/* Avatar/Quote Icon */}
               <div className="flex-shrink-0">
                 {t.avatar ? (
@@ -200,23 +257,50 @@ export default function Testimonials() {
                 </div>
               </div>
 
-              {/* Content */}
-              <div>
+              {/* Content - Scrollable */}
+              <div className="flex-1 overflow-y-auto custom-scrollbar px-2 w-full">
+                {/* Quote */}
                 {t.quote && (
-                  <h4 className="text-lg font-bold text-slate-900 mb-2">
-                    "{t.quote}"
-                  </h4>
+                  <div className="mb-3">
+                    <h4 className="text-lg font-bold text-slate-900">
+                      "{needsTruncation(t.quote, QUOTE_MAX_LENGTH) && !expandedCards.quote
+                        ? truncateText(t.quote, QUOTE_MAX_LENGTH)
+                        : t.quote}"
+                    </h4>
+                    {needsTruncation(t.quote, QUOTE_MAX_LENGTH) && (
+                      <button
+                        onClick={() => toggleExpanded('quote')}
+                        className="text-xs text-slate-900 font-semibold hover:underline mt-1"
+                      >
+                        {expandedCards.quote ? "Show less" : "Read more"}
+                      </button>
+                    )}
+                  </div>
                 )}
-                <p className="text-sm text-slate-700 italic mb-4 leading-relaxed">
-                  "{t.content}"
+
+                {/* Content */}
+                <p className="text-sm text-slate-700 italic leading-relaxed mb-3">
+                  "{needsTruncation(t.content, CONTENT_MAX_LENGTH_MOBILE) && !expandedCards.content
+                    ? truncateText(t.content, CONTENT_MAX_LENGTH_MOBILE)
+                    : t.content}"
                 </p>
-                <div className="border-t border-slate-100 pt-4">
-                  <h5 className="font-bold text-base text-slate-900">{t.author}</h5>
-                  <p className="text-xs text-slate-600 font-medium mt-1">
-                    {t.role}
-                    {t.company && ` · ${t.company}`}
-                  </p>
-                </div>
+                {needsTruncation(t.content, CONTENT_MAX_LENGTH_MOBILE) && (
+                  <button
+                    onClick={() => toggleExpanded('content')}
+                    className="text-xs text-slate-900 font-semibold hover:underline"
+                  >
+                    {expandedCards.content ? "Show less" : "Read more"}
+                  </button>
+                )}
+              </div>
+
+              {/* Author Info - Fixed at bottom */}
+              <div className="border-t border-slate-100 pt-4 w-full flex-shrink-0">
+                <h5 className="font-bold text-base text-slate-900">{t.author}</h5>
+                <p className="text-xs text-slate-600 font-medium mt-1">
+                  {t.role}
+                  {t.company && ` · ${t.company}`}
+                </p>
               </div>
             </div>
           </Card>
@@ -242,9 +326,14 @@ export default function Testimonials() {
               <button
                 key={i}
                 onClick={() => {
-                  if (!animating) {
+                  if (!animating && i !== index) {
                     setDirection(i > index ? "right" : "left");
-                    handleNavigation(i > index ? "right" : "left");
+                    setAnimating(true);
+                    setTimeout(() => {
+                      setIndex(i);
+                      setAnimating(false);
+                      setExpandedCards({});
+                    }, 500);
                   }
                 }}
                 className={`w-2 h-2 rounded-full transition-all ${
@@ -271,6 +360,24 @@ export default function Testimonials() {
           </button>
         </div>
       </div>
+
+      {/* Custom Scrollbar Styles */}
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f5f9;
+          border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
+        }
+      `}</style>
     </div>
   );
 }
