@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 
 const API_TOKEN = import.meta.env.VITE_COURSE_API_TOKEN;
-const BASE_URL = import.meta.env.VITE_BASE_URL;
+const TESTIMONIAL_API_URL = import.meta.env.VITE_TESTIMONIALS_API_URL;
 
 export default function Testimonials() {
   const [testimonials, setTestimonials] = useState([]);
@@ -16,7 +16,7 @@ export default function Testimonials() {
     const fetchTestimonials = async () => {
       try {
         const response = await fetch(
-          `${BASE_URL}/api/resource/Testimonial?fields=["*"]`,
+          `${TESTIMONIAL_API_URL}`,
           {
             headers: {
               Authorization: `token ${API_TOKEN}`,
