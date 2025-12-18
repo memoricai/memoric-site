@@ -10,13 +10,14 @@ export default function HeroIllustration() {
   const [heroData, setHeroData] = useState(null);
   const [batchDetails, setBatchDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const HERO_URL=`${BASE_URL}/api/method/memoric_frappe.api.memoric_settings.get_hero_announcement`
 
   useEffect(() => {
     const fetchHeroSettings = async () => {
       try {
         setLoading(true);
         const response = await fetch(
-          `${BASE_URL}/api/method/frappe.client.get?doctype=Memoric%20Settings&name=Memoric%20Settings`,
+          HERO_URL,
           { headers: { Authorization: `token ${API_TOKEN}` } }
         );
         const data = await response.json();
