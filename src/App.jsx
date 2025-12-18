@@ -35,7 +35,7 @@ export default function App() {
 
           {/* Legal pages */}
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/termsncond" element={<TermsAndConditions />} />
+          <Route path="/termsnconditions" element={<TermsAndConditions />} />
           <Route path="/refund-policy" element={<RefundPolicy />} />
         </Routes>
       </main>
