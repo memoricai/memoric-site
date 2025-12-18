@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react"; // ✅ added
 
 const getLogoUrl = (logo) => {
   if (!logo) return "";
@@ -9,6 +10,7 @@ const getLogoUrl = (logo) => {
 export default function CompanyLogosSlider() {
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
+  const sliderRef = useRef(null); // ✅ added
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -41,6 +43,15 @@ export default function CompanyLogosSlider() {
     ? [...companies, ...companies]
     : companies;
 
+  // ✅ added
+  const scrollLeft = () => {
+    sliderRef.current?.scrollBy({ left: -300, behavior: "smooth" });
+  };
+
+  const scrollRight = () => {
+    sliderRef.current?.scrollBy({ left: 300, behavior: "smooth" });
+  };
+
   return (
     <section className="w-full bg-white py-20 overflow-hidden">
       <div className="max-w-6xl mx-auto px-6">
@@ -56,15 +67,25 @@ export default function CompanyLogosSlider() {
         </div>
 
         {/* Logos */}
-        <div className="relative flex justify-center">
+        <div className="relative flex items-center justify-center">
+
+          {/* ✅ Left Chevron */}
+          <button
+            onClick={scrollLeft}
+            className="absolute left-0 z-20 bg-white/90 border border-slate-200
+                       rounded-full p-2 shadow hover:bg-white transition"
+          >
+            <ChevronLeft className="w-5 h-5 text-slate-700" />
+          </button>
+
+          {/* Gradients */}
           <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-white to-transparent z-10" />
           <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-white to-transparent z-10" />
 
-          <div className="w-full overflow-hidden">
+          {/* Slider */}
+          <div className="w-full overflow-hidden" ref={sliderRef}>
             <div
-              className={`flex items-center gap-12 py-8 justify-center ${
-                shouldScroll ? "animate-scroll" : ""
-              }`}
+              className={`flex items-center gap-12 py-8 justify-center`}
             >
               {displayCompanies.map((company, index) => (
                 <div
@@ -92,28 +113,18 @@ export default function CompanyLogosSlider() {
               ))}
             </div>
           </div>
+
+          {/* ✅ Right Chevron */}
+          <button
+            onClick={scrollRight}
+            className="absolute right-0 z-20 bg-white/90 border border-slate-200
+                       rounded-full p-2 shadow hover:bg-white transition"
+          >
+            <ChevronRight className="w-5 h-5 text-slate-700" />
+          </button>
         </div>
       </div>
 
-      {/* Vite-safe animation */}
-      <style>{`
-        @keyframes scroll {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
-        }
-
-        .animate-scroll {
-          animation: scroll 30s linear infinite;
-        }
-
-        .animate-scroll:hover {
-          animation-play-state: paused;
-        }
-      `}</style>
     </section>
   );
 }
