@@ -10,7 +10,7 @@ export default function HeroIllustration() {
   const [heroData, setHeroData] = useState(null);
   const [batchDetails, setBatchDetails] = useState(null);
   const [loading, setLoading] = useState(true);
-  const HERO_URL=`${BASE_URL}/api/method/memoric_frappe.api.memoric_settings.get_hero_announcement`
+  const HERO_URL = `${BASE_URL}/api/method/memoric_frappe.api.memoric_settings.get_hero_announcement`
 
   useEffect(() => {
     const fetchHeroSettings = async () => {
@@ -18,7 +18,15 @@ export default function HeroIllustration() {
         setLoading(true);
         const response = await fetch(
           HERO_URL,
-          { headers: { Authorization: `token ${API_TOKEN}` } }
+          {
+            headers: {
+              "Authorization": `token ${API_TOKEN}`,
+              "Content-Type": "application/json",
+              "Cache-Control": "no-cache",
+              "Pragma": "no-cache",
+            },
+            cache: "no-store",
+          }
         );
         const data = await response.json();
         setHeroData(data.message);
@@ -42,7 +50,15 @@ export default function HeroIllustration() {
     try {
       const response = await fetch(
         `${BASE_URL}/api/method/frappe.client.get?doctype=LMS%20Batch&name=${batchName}`,
-        { headers: { Authorization: `token ${API_TOKEN}` } }
+        {
+          headers: {
+            "Authorization": `token ${API_TOKEN}`,
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache",
+          },
+          cache: "no-store",
+        }
       );
       const data = await response.json();
       setBatchDetails(data.message);
