@@ -4,6 +4,7 @@ import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Sections from "./pages/Sections";
+import { PrivacyPolicy, TermsAndConditions, RefundPolicy } from "./pages/Legal";
 import { Toaster } from "react-hot-toast";
 
 export default function App() {
@@ -28,13 +29,19 @@ export default function App() {
       {sidebarOpen && <Sidebar setOpen={setSidebarOpen} />}
 
       <main className="flex-1 relative">
-        <Sections />
+        <Routes>
+          {/* Main site */}
+          <Route path="/" element={<Sections />} />
+
+          {/* Legal pages */}
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/termsncond" element={<TermsAndConditions />} />
+          <Route path="/refund-policy" element={<RefundPolicy />} />
+        </Routes>
       </main>
 
       <Footer />
-
-      {/* Toast notifications */}
-      <Toaster position="top-right" reverseOrder={false} />
+      <Toaster position="top-right" />
     </div>
   );
 }

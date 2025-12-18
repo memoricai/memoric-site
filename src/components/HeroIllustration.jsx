@@ -9,65 +9,35 @@ const HERO_API_URL = import.meta.env.VITE_HERO_API_URL;
 
 export default function HeroIllustration() {
   const [heroData, setHeroData] = useState(null);
-  const [batchDetails, setBatchDetails] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchHeroSettings = async () => {
       try {
         setLoading(true);
-        const response = await fetch(
-          HERO_API_URL,
-          {
-            headers: {
-              "Authorization": `token ${API_TOKEN}`,
-              "Content-Type": "application/json",
-              "Cache-Control": "no-cache",
-              "Pragma": "no-cache",
-            },
-            cache: "no-store",
-          }
-        );
+        const response = await fetch(HERO_API_URL, {
+          headers: {
+            Authorization: `token ${API_TOKEN}`,
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache",
+            Pragma: "no-cache",
+          },
+          cache: "no-store",
+        });
+
         const data = await response.json();
         setHeroData(data.message);
-        console.log('Hero Settings Data:', data.message);
-
-        if (data.message?.hero_batch) {
-          fetchBatchDetails(data.message.hero_batch);
-        } else {
-          setLoading(false);
-        }
       } catch (error) {
-        console.error('Error fetching hero settings:', error);
+        console.error("Error fetching hero settings:", error);
+      } finally {
         setLoading(false);
       }
     };
 
     fetchHeroSettings();
   }, []);
+  const batchDetails = heroData?.batch;
 
-  const fetchBatchDetails = async (batchName) => {
-    try {
-      const response = await fetch(
-        `${BASE_URL}/api/method/frappe.client.get?doctype=LMS%20Batch&name=${batchName}`,
-        {
-          headers: {
-            "Authorization": `token ${API_TOKEN}`,
-            "Content-Type": "application/json",
-            "Cache-Control": "no-cache",
-            "Pragma": "no-cache",
-          },
-          cache: "no-store",
-        }
-      );
-      const data = await response.json();
-      setBatchDetails(data.message);
-    } catch (error) {
-      console.error('Error fetching batch details:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
