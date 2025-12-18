@@ -62,8 +62,8 @@ export default function Footer() {
         <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-400">
           <p>© {new Date().getFullYear()} MemoricAI. All rights reserved.</p>
           <div className="flex gap-6">
-            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+            <a href="https://www.termsfeed.com/live/50419f14-00c1-44ae-add0-0cdc5dc87388" className="hover:text-white transition-colors" target="_blank">Privacy Policy</a>
+            <a href="https://www.termsfeed.com/live/8ade2143-d2bf-448e-a309-d4122b8bb731" className="hover:text-white transition-colors" target="_blank">Terms of Service</a>
           </div>
         </div>
       </div>
