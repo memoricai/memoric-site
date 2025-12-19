@@ -90,9 +90,9 @@ export default function Courses() {
                        text-slate-900 mb-3 md:mb-4 lg:mb-6 tracking-tight">
             Our Courses
           </h2>
-          <p className="text-sm sm:text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-2">
+          {/* <p className="text-sm sm:text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-2">
             Practical courses designed to help you implement AI effectively.
-          </p>
+          </p> */}
         </div>
 
         {/* Courses Grid */}

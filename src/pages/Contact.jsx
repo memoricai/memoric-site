@@ -89,11 +89,11 @@ export default function Contact() {
                        text-slate-900 mb-3 md:mb-4 lg:mb-6 tracking-tight">
             Contact Us
           </h2>
-          <p className="text-sm sm:text-base md:text-lg text-slate-600 
+          {/* <p className="text-sm sm:text-base md:text-lg text-slate-600 
                       max-w-2xl mx-auto px-2">
             We're here to answer questions, discuss your AI training needs, or explore 
             how we can support your organization.
-          </p>
+          </p> */}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 lg:gap-12">
