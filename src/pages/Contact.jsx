@@ -36,6 +36,7 @@ export default function Contact() {
           body: JSON.stringify({
             first_name: firstName,
             last_name: lastName,
+            organization: organization,
             email: email,
             message: message,
           }),
