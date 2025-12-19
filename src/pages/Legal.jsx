@@ -324,7 +324,7 @@ export function RefundPolicy() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         <Card className="p-6 md:p-8 lg:p-10 border-2 border-slate-100">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-6 md:mb-8">
-            Memoric AI Refund Policy
+            Memoric AI Cancellation & Refund Policy
           </h1>
 
           <div className="prose prose-slate max-w-none space-y-6 text-sm md:text-base">
