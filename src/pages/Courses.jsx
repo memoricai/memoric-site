@@ -210,7 +210,7 @@ export default function Courses() {
                         <Button className="w-full bg-slate-900 hover:bg-slate-800
                                          text-white font-semibold py-3 md:py-4
                                          text-sm md:text-base rounded-lg shadow-md 
-                                         hover:shadow-lg transition-all duration-300">
+                                         hover:shadow-lg transition-all duration-300 cursor-pointer">
                           Enroll Now
                         </Button>
                       </a>

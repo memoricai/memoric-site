@@ -81,13 +81,13 @@ export default function Footer() {
           <p>© {new Date().getFullYear()} MemoricAI. All rights reserved.</p>
 
           <div className="flex gap-6">
-            <Link to="/privacy-policy" className="hover:text-white">
+            <Link to="/privacy-policy" className="hover:text-white" target="_blank">
               Privacy Policy
             </Link>
-            <Link to="/termsnconditions" className="hover:text-white">
+            <Link to="/termsnconditions" className="hover:text-white" target="_blank">
               Terms & Conditions
             </Link>
-            <Link to="/refund-policy" className="hover:text-white">
+            <Link to="/refund-policy" className="hover:text-white" target="_blank">
               Cancellation & Refund Policy
             </Link>
           </div>
