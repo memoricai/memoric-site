@@ -30,11 +30,10 @@ export default function Services() {
                                    hover:border-slate-900 shadow-sm hover:shadow-xl 
                                    transition-all duration-300 ease-in-out flex flex-col">
                         <div className="w-12 h-12 md:w-14 md:h-14 bg-slate-900 rounded-xl 
-                                      flex items-center justify-center mb-4 md:mb-6 shadow-lg">
+                                      flex items-center justify-center shadow-lg">
                             <span className="text-2xl md:text-3xl">🎓</span>
                         </div>
-                        <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 
-                                     mb-2 md:mb-3 lg:mb-4">
+                        <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 ">
                             Training
                         </h3>
                         <p className="text-sm md:text-base text-slate-600 leading-relaxed flex-grow">
@@ -51,11 +50,10 @@ export default function Services() {
                                    hover:border-slate-900 shadow-sm hover:shadow-xl 
                                    transition-all duration-300 ease-in-out flex flex-col">
                         <div className="w-12 h-12 md:w-14 md:h-14 bg-slate-900 rounded-xl 
-                                      flex items-center justify-center mb-4 md:mb-6 shadow-lg">
+                                      flex items-center justify-center shadow-lg">
                             <span className="text-2xl md:text-3xl">💼</span>
                         </div>
-                        <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 
-                                     mb-2 md:mb-3 lg:mb-4">
+                        <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900">
                             Strategic Consulting
                         </h3>
                         <p className="text-sm md:text-base text-slate-600 leading-relaxed flex-grow">
@@ -71,11 +69,10 @@ export default function Services() {
                                    transition-all duration-300 ease-in-out flex flex-col 
                                    md:col-span-2 lg:col-span-1">
                         <div className="w-12 h-12 md:w-14 md:h-14 bg-slate-900 rounded-xl 
-                                      flex items-center justify-center mb-4 md:mb-6 shadow-lg">
+                                      flex items-center justify-center shadow-lg">
                             <span className="text-2xl md:text-3xl">🔬</span>
                         </div>
-                        <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 
-                                     mb-2 md:mb-3 lg:mb-4">
+                        <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 ">
                             Research
                         </h3>
                         <p className="text-sm md:text-base text-slate-600 leading-relaxed flex-grow">
