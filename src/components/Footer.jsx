@@ -84,7 +84,7 @@ export default function Footer() {
             <Link to="/privacy-policy" className="hover:text-white" target="_blank">
               Privacy Policy
             </Link>
-            <Link to="/termsnconditions" className="hover:text-white" target="_blank">
+            <Link to="/terms-conditions" className="hover:text-white" target="_blank">
               Terms & Conditions
             </Link>
             <Link to="/refund-policy" className="hover:text-white" target="_blank">
