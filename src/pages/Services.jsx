@@ -17,14 +17,14 @@ export default function Services() {
                     </h2>
                     <p className="text-sm sm:text-base md:text-lg text-slate-600 
                                 leading-relaxed max-w-3xl mx-auto px-2">
-                        We offer customized solutions to help your organization understand, adopt, 
+                        We offer customized solutions to help your organization understand, adopt,
                         and innovate with AI, enabling you to stay ahead in the age of intelligence.
                     </p>
                 </div>
 
                 {/* Services Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                    
+
                     {/* Training */}
                     <Card className="p-5 md:p-6 lg:p-8 rounded-xl border-2 border-slate-200 
                                    hover:border-slate-900 shadow-sm hover:shadow-xl 
@@ -37,11 +37,7 @@ export default function Services() {
                             Training
                         </h3>
                         <p className="text-sm md:text-base text-slate-600 leading-relaxed flex-grow">
-                            Modules tailored for executives, managers, and staff. We build AI literacy 
-                            and fluency across your organization. AI literacy focuses on understanding 
-                            how AI solves business problems and automates routine work. AI fluency 
-                            develops hands-on skills with AI tools and the confidence to choose and use 
-                            them effectively.
+                            Modules tailored for executives, managers, and staff. We advance AI literacy and fluency across organizations. AI literacy focuses on understanding how AI solves business problems and automates routine work. AI fluency develops hands-on skills with AI tools and the confidence to choose and use them effectively.
                         </p>
                     </Card>
 
@@ -57,9 +53,7 @@ export default function Services() {
                             Strategic Consulting
                         </h3>
                         <p className="text-sm md:text-base text-slate-600 leading-relaxed flex-grow">
-                            We guide your organization through secure, responsible AI adoption. Our work 
-                            spans AI strategy, use case identification, tooling choices, and governance 
-                            models, so you can innovate with confidence while managing risk.
+                            We guide organizations through secure, responsible AI adoption. Our work spans AI strategy, use case identification, tooling choices, and governance models, so you can innovate with confidence while managing risk.
                         </p>
                     </Card>
 
@@ -76,10 +70,7 @@ export default function Services() {
                             Research
                         </h3>
                         <p className="text-sm md:text-base text-slate-600 leading-relaxed flex-grow">
-                            We conduct cutting-edge research on responsible AI adoption, process 
-                            improvement, and economic impact. Our team collaborates with leading 
-                            international universities, businesses, and research institutions to turn 
-                            insights into practical, measurable outcomes.
+                           We conduct cutting-edge research on responsible AI adoption, process improvement, and economic impact. Our team collaborates with leading international universities, businesses, and research institutions to turn insights into practical, measurable outcomes.
                         </p>
                     </Card>
                 </div>
@@ -98,10 +89,10 @@ export default function Services() {
                 </div>
 
             </div>
-            
+
             {/* Company Logos */}
             <div className="mt-12 md:mt-16 lg:mt-20">
-                <CompanyLogosSlider />
+                {/* <CompanyLogosSlider /> */}
             </div>
         </div>
     );

@@ -32,7 +32,7 @@ export default function Home() {
                   <span className="block font-semibold">Transform Your Organization</span>
                   <span className="block text-slate-300 font-medium text-base sm:text-lg my-1">by</span>
                   <span className="block font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
-                    Strengthening AI capabilities
+                    Strengthening AI Capabilities
                   </span>
                 </span>
 
@@ -40,15 +40,14 @@ export default function Home() {
                 <span className="hidden lg:block">
                   Transform Your Organization by
                   <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 mt-2">
-                    Strengthening AI capabilities
+                    Strengthening AI Capabilities
                   </span>
                 </span>
               </h1>
 
               <p className="text-base md:text-lg lg:text-xl text-slate-300 leading-relaxed 
               max-w-2xl pr-0 lg:pr-8 text-center lg:text-left mx-auto lg:mx-0">
-                AI literacy and fluency training to build practical, internal skills for automation
-                that works. Bridge the gap between AI possibility and practical implementation.
+                AI literacy and fluency training to build core understanding and practical skills for automation that works. Bridge the gap between AI possibility and hands-on implementation.
               </p>
 
             </div>
