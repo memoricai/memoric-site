@@ -1,8 +1,11 @@
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { BadgeCheck, Scale, Lightbulb, Target } from "lucide-react";
+import RahulImage from "@/assets/RahulDe.jpg";
+import SharmilaImage from "@/assets/Sharmila.jpg";
+import LewinImage from "@/assets/Lewin.jpeg";
 
-function TeamCard({ name, role, highlights }) {
+function TeamCard({ name, role, highlights, avatar }) {
   return (
     <Card
       className="
@@ -15,18 +18,11 @@ function TeamCard({ name, role, highlights }) {
     >
       {/* Avatar */}
       <div className="flex justify-center">
-        <div
-          className="
-            w-20 h-20
-            rounded-full
-            bg-gradient-to-br from-slate-100 to-slate-200
-            flex items-center justify-center
-            text-4xl
-            shadow-inner
-          "
-        >
-          👤
-        </div>
+        <img
+          src={avatar}
+          alt={name}
+          className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 rounded-full object-cover shadow-inner"
+        />
       </div>
 
       {/* Name + Role */}
@@ -185,6 +181,7 @@ export default function About() {
             <TeamCard
               name="Rahul De’"
               role="Founder and CEO"
+              avatar={RahulImage}
               highlights={[
                 "PhD from the AI in Management Lab, Katz School of Business, University of Pittsburgh, 1993.",
                 "Professor (Retd) IIM Bangalore, also served as Dean (Programmes).",
@@ -198,6 +195,7 @@ export default function About() {
             <TeamCard
               name="Sharmila Chakravarty"
               role="Co-Founder and COO"
+              avatar={SharmilaImage}
               highlights={[
                 "Software engineer by training, experience with AT&T and other technology firms.",
                 "MSc from University of Maryland.",
@@ -209,6 +207,7 @@ export default function About() {
             <TeamCard
               name="Lewin Sivamalai"
               role="Instructor"
+              avatar={LewinImage}
               highlights={[
                 "He has a PhD from IIM Bangalore",
                 "He is a seasoned data scientist and program manager, with over 12 years experience spanning IT Services, financial inclusion, data-driven governance, and experiential learning for corporate training.",
