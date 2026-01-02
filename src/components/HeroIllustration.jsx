@@ -234,7 +234,7 @@ export default function HeroIllustration() {
   /* ---------------- Announcement ---------------- */
   if (batchDetails) {
     return (
-      <div className="relative w-full h-full">
+      <div className="relative w-full">
         {/* Announcement badge */}
         <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
           <Badge className="
@@ -256,7 +256,7 @@ export default function HeroIllustration() {
         <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
 
         <Card className="
-          mt-4 h-[calc(100%-16px)]
+          mt-4
           bg-white/10 backdrop-blur-sm
           border border-white/20
           rounded-2xl
@@ -268,23 +268,23 @@ export default function HeroIllustration() {
             absolute top-0 left-0 right-0 h-[2px]
             bg-gradient-to-r from-blue-400 to-purple-400
           " />
-          <div className="p-5 md:p-6 space-y-4 flex-1 flex flex-col justify-center">
+          <div className="p-4 md:p-6 space-y-4">
             {/* Title */}
-            <h3 className="text-lg md:text-xl lg:text-2xl font-semibold text-white leading-snug">
+            <h3 className="text-base md:text-lg lg:text-xl font-semibold text-white leading-snug">
               {batchDetails.title}
             </h3>
 
             {/* Description */}
             {batchDetails.description && (
-              <p className="text-sm md:text-base text-slate-300 line-clamp-3">
+              <p className="text-xs md:text-sm text-slate-300 line-clamp-2">
                 {batchDetails.description}
               </p>
             )}
 
             {/* Info */}
             <div className="grid gap-3 text-sm md:text-base text-slate-300">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 flex-shrink-0" />
+              <div className="grid gap-3 text-xs md:text-sm text-slate-300">
+               <Calendar className="w-4 h-4" />
                 <span className="text-xs sm:text-sm md:text-base">
                   {formatDate(batchDetails.start_date)} – {formatDate(batchDetails.end_date)}
                 </span>
@@ -292,7 +292,7 @@ export default function HeroIllustration() {
 
               {batchDetails.start_time && (
                 <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 flex-shrink-0" />
+                  <Clock className="w-4 h-4" />
                   <span className="text-xs sm:text-sm md:text-base">
                     {formatTime(batchDetails.start_time)} – {formatTime(batchDetails.end_time)} {batchDetails.timezone}
                   </span>
@@ -301,7 +301,7 @@ export default function HeroIllustration() {
 
               {batchDetails.seat_count && (
                 <div className="flex items-center gap-2">
-                  <Users className="w-4 h-4 flex-shrink-0" />
+                   <Users className="w-4 h-4" />
                   <span className="text-xs sm:text-sm md:text-base">
                     {batchDetails.seat_count} seats announced
                   </span>
@@ -316,15 +316,10 @@ export default function HeroIllustration() {
 
   /* ---------------- Fallback ---------------- */
   return (
-    <Card className="
-      h-[350px] sm:h-[400px] md:h-[450px] lg:h-[380px] xl:h-[420px]
-      bg-white/10 backdrop-blur-md border border-white/20 
-      rounded-2xl shadow-2xl 
-      flex items-center justify-center
-    ">
-      <div className="text-center text-white px-4">
-        <h3 className="text-xl md:text-2xl font-bold mb-2">Coming Soon</h3>
-        <p className="text-sm md:text-base text-slate-300">New announcements on the way</p>
+    <Card className="h-64 md:h-80 lg:h-96 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-2xl flex items-center justify-center">
+      <div className="text-center text-white">
+        <h3 className="text-xl font-bold">Coming Soon</h3>
+        <p className="text-sm text-slate-300">New announcements on the way</p>
       </div>
     </Card>
   );
