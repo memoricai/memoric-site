@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
+import { CheckCircle } from "lucide-react";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const API_TOKEN = import.meta.env.VITE_COURSE_API_TOKEN;
 
 export default function Enroll() {
     const { batchName } = useParams();
+    const navigate = useNavigate();
     const [batch, setBatch] = useState(null);
     const [loading, setLoading] = useState(true);
     const [sessions, setSessions] = useState([]);
-    const [payment, setPayment] = useState(null);
+    const [showThankYou, setShowThankYou] = useState(false);
 
     const [formData, setFormData] = useState({
         name1: "",
@@ -38,9 +40,6 @@ export default function Enroll() {
                 );
                 const data = await res.json();
                 setBatch(data.data);
-
-                // Set payment from batch
-                setPayment(data.data?.price || null);
             } catch (err) {
                 console.error(err);
             } finally {
@@ -54,7 +53,6 @@ export default function Enroll() {
     useEffect(() => {
         const fetchSessions = async () => {
             try {
-                // Fields we actually need
                 const fields = encodeURIComponent(JSON.stringify([
                     "name",
                     "title",
@@ -89,6 +87,11 @@ export default function Enroll() {
         fetchSessions();
     }, [batchName]);
 
+    /* ---------------- Payment calculation ---------------- */
+    const calculatePayment = (totalAmount) => {
+        const baseAmount = Math.round(totalAmount / 1.18);
+        return baseAmount;
+    };
 
     /* ---------------- Submit form ---------------- */
     const handleSubmit = async () => {
@@ -118,14 +121,14 @@ export default function Enroll() {
             const data = await res.json();
             if (!res.ok || data.exc) throw new Error();
 
-            toast.success("Enrollment submitted successfully!");
-            setFormData({
-                name1: "",
-                email: "",
-                organisation: "",
-                highest_education_qualification: "",
-                remarks: "",
-            });
+            // Show thank you message
+            setShowThankYou(true);
+
+            // Redirect after 3 seconds
+            setTimeout(() => {
+                navigate('/');
+            }, 3000);
+
         } catch {
             toast.error("Failed to submit enrollment");
         }
@@ -134,19 +137,41 @@ export default function Enroll() {
     if (loading)
         return <div className="py-20 text-center">Loading...</div>;
 
+    // Thank You Modal/Screen
+    if (showThankYou) {
+        return (
+            <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                <Card className="max-w-md w-full p-8 text-center space-y-6 animate-in fade-in zoom-in duration-300 gap-2">
+                    <div className="flex justify-center">
+                        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
+                            <CheckCircle className="w-12 h-12 text-green-600" />
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <h2 className="text-2xl font-bold text-slate-900">
+                            Thank You!
+                        </h2>
+                        <p className="text-slate-600">
+                            Your enrollment has been submitted successfully.
+                        </p>
+                        <p className="text-sm text-slate-500">
+                            Redirecting to home page...
+                        </p>
+                    </div>
+                </Card>
+            </div>
+        );
+    }
+
     const formatSessionTime = (session) => {
         if (!session.date || !session.time) return "Invalid Date";
 
-        // Combine date + time
         const [hours, minutes, seconds] = session.time.split(":").map(Number);
         const [year, month, day] = session.date.split("-").map(Number);
-        // Month is 0-indexed in JS Date
         const startDate = new Date(year, month - 1, day, hours, minutes, seconds);
-
-        // Calculate end time using duration (in minutes)
         const endDate = new Date(startDate.getTime() + (session.duration || 0) * 60000);
 
-        // Format date and time
         const dateStr = startDate.toLocaleDateString("en-IN", {
             day: "2-digit",
             month: "short",
@@ -166,7 +191,25 @@ export default function Enroll() {
         return `${dateStr} ${startStr} – ${endStr}`;
     };
 
+    const formatDate = (dateStr) => {
+        if (!dateStr) return "";
+        return new Date(dateStr).toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+        });
+    };
 
+    const formatTime = (timeStr) => {
+        if (!timeStr) return "";
+        const [h, m] = timeStr.split(":");
+        const d = new Date();
+        d.setHours(h, m);
+        return d.toLocaleTimeString("en-IN", {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+    };
 
     return (
         <div className="w-full bg-slate-50 py-14">
@@ -174,105 +217,148 @@ export default function Enroll() {
 
                 {/* Page Title */}
                 <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-10 text-center">
-                    {batch.title}
+                    {batch.title?.replace(/\s*-\s*#.*$/, "").trim() || batch.title}
                 </h1>
 
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
 
-                    {/* LEFT – Course Info */}
+                    {/* LEFT – Course Info (3 columns) */}
                     <div className="lg:col-span-3 space-y-6">
-                        <Card className="p-6 border-2 border-slate-100">
-                            <h3 className="font-bold text-slate-900 mb-2">Course Description</h3>
-                            <p className="text-slate-600 text-sm leading-relaxed">
+
+                        {/* Introduction */}
+                        <Card className="p-6 border-2 border-slate-100 gap-2">
+                            <h3 className="font-bold text-slate-900 mb-4 text-xl">Introduction</h3>
+                            <div className="space-y-3 text-sm text-slate-700">
                                 {batch?.description || "—"}
-                            </p>
+                            </div>
                         </Card>
 
-                        <Card className="p-6 border-2 border-slate-100">
-                            <h3 className="font-bold text-slate-900 mb-2">Key Takeaways</h3>
-                            {/* Render HTML safely */}
+                        {/* Course Description */}
+                        <Card className="p-6 border-2 border-slate-100 gap-2">
+                            <h3 className="font-bold text-slate-900 mb-3 text-xl">Description</h3>
                             <div
-                                className="text-slate-600 text-sm leading-relaxed"
+                                className="text-slate-600 text-sm leading-relaxed prose prose-sm max-w-none"
                                 dangerouslySetInnerHTML={{
                                     __html: batch?.batch_details || "—",
                                 }}
                             />
                         </Card>
 
-                        <Card className="p-6 border-2 border-slate-100">
-                            <h3 className="font-bold text-slate-900 mb-3">
-                                Session Timings
+                        {/* Certification */}
+                        {batch?.certification && (
+                            <Card className="p-6 border-2 border-slate-100 gap-2">
+                                <h3 className="font-bold text-slate-900 mb-2 text-xl">Certification</h3>
+                                <p className="text-slate-600 text-sm">
+                                    Candidates who successfully complete this course will earn a Course Certificate from Memoric AI.
+                                </p>
+                            </Card>
+                        )}
+                    </div>
+
+
+                    {/* RIGHT – Session Details & Form (2 columns) */}
+                    <div className="lg:col-span-2 space-y-6">
+
+                        {/* Session Timings & Payment */}
+                        <Card className="p-6 border-2 border-slate-100 bg-white top-24 gap-2">
+                            <h3 className="font-bold text-slate-900 mb-4 text-xl">
+                                Session Details
                             </h3>
 
                             {sessions.length === 0 ? (
-                                <p className="text-sm text-slate-500">Session details will be updated soon.</p>
+                                <p className="text-sm text-slate-500">
+                                    Session details will be updated soon.
+                                </p>
                             ) : (
                                 <ul className="space-y-2 text-sm text-slate-700">
                                     {sessions.map((session, index) => (
-                                        <li key={session.name}>
-                                            <strong>Session {index + 1}:</strong>{" "}
-                                            {formatSessionTime(session)}
+                                        <li key={session.name} className="pb-2 border-b border-slate-100 last:border-0">
+                                            <strong className="text-slate-900">
+                                                {session.title || `Session ${index + 1}`}:
+                                            </strong>
+                                            <div className="text-xs text-slate-600 mt-1">
+                                                {formatSessionTime(session)}
+                                            </div>
                                         </li>
                                     ))}
                                 </ul>
                             )}
 
-                            {payment && (
-                                <div className="mt-4 pt-4 border-t text-sm font-medium text-slate-900">
-                                    Payment: ₹ {payment} + 18% GST
+                            {/* Payment Info */}
+                            {batch?.amount > 0 && (
+                                <div className="pt-4 border-t border-slate-200">
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-sm font-semibold text-slate-900">
+                                            Course Fee:
+                                        </span>
+                                        <span className="text-lg font-bold text-slate-900">
+                                            ₹{calculatePayment(batch.amount) || 0} + 18% GST
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+
+                            {batch?.paid_batch === 0 && (
+                                <div className="pt-4 border-t border-slate-200">
+                                    <span className="text-sm font-semibold text-green-600">
+                                        Free Course
+                                    </span>
                                 </div>
                             )}
                         </Card>
 
-                        <Card className="p-6 border-2 border-slate-100">
-                            <h3 className="font-bold text-slate-900 mb-2">Certification</h3>
-                            <p className="text-slate-600 text-sm">
-                                Certificate of completion will be provided.
-                            </p>
-                        </Card>
-                    </div>
+                        {/* Enrollment Form */}
+                        <Card className="p-6 shadow-lg space-y-2 border-2 border-slate-100 gap-2">
 
-                    {/* RIGHT – Participant Form */}
-                    <div className="lg:col-span-2">
-                        <Card className="p-6 shadow-lg space-y-4">
-
-                            <h3 className="font-bold text-slate-900">
-                                Participant Information
+                            <h3 className="font-bold text-slate-900 text-xl">
+                                Enrollment Form
                             </h3>
 
                             <div>
-                                <label className="text-sm font-medium">Name *</label>
+                                <label className="text-sm font-medium text-slate-900">
+                                    Name <span className="text-red-500">*</span>
+                                </label>
                                 <Input
                                     value={formData.name1}
                                     onChange={(e) =>
                                         setFormData({ ...formData, name1: e.target.value })
                                     }
+                                    placeholder="Your full name"
+                                    className="mt-1"
                                 />
                             </div>
 
                             <div>
-                                <label className="text-sm font-medium">Email *</label>
+                                <label className="text-sm font-medium text-slate-900">
+                                    Email <span className="text-red-500">*</span>
+                                </label>
                                 <Input
                                     type="email"
                                     value={formData.email}
                                     onChange={(e) =>
                                         setFormData({ ...formData, email: e.target.value })
                                     }
+                                    placeholder="your.email@example.com"
+                                    className="mt-1"
                                 />
                             </div>
 
                             <div>
-                                <label className="text-sm font-medium">Organisation</label>
+                                <label className="text-sm font-medium text-slate-900">
+                                    Organisation
+                                </label>
                                 <Input
                                     value={formData.organisation}
                                     onChange={(e) =>
                                         setFormData({ ...formData, organisation: e.target.value })
                                     }
+                                    placeholder="Your company or institution"
+                                    className="mt-1"
                                 />
                             </div>
 
                             <div>
-                                <label className="text-sm font-medium">
+                                <label className="text-sm font-medium text-slate-900">
                                     Educational / Professional Background
                                 </label>
                                 <Input
@@ -283,22 +369,29 @@ export default function Enroll() {
                                             highest_education_qualification: e.target.value,
                                         })
                                     }
+                                    placeholder="e.g., MBA, B.Tech, Professional"
+                                    className="mt-1"
                                 />
                             </div>
 
                             <div>
-                                <label className="text-sm font-medium">Purpose</label>
+                                <label className="text-sm font-medium text-slate-900">
+                                    Purpose
+                                </label>
                                 <Textarea
                                     value={formData.remarks}
                                     onChange={(e) =>
                                         setFormData({ ...formData, remarks: e.target.value })
                                     }
+                                    placeholder="Why are you interested in this course?"
+                                    className="mt-1"
+                                    rows={3}
                                 />
                             </div>
 
                             <Button
                                 onClick={handleSubmit}
-                                className="w-full bg-slate-900 hover:bg-slate-800"
+                                className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3"
                             >
                                 Submit Enrollment
                             </Button>

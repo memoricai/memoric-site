@@ -193,7 +193,7 @@ export default function Courses() {
                     {batch.published === 1 ? (
                       <Link to={`/enroll/${batch.name}`} className="block">
                         <Button className="w-full bg-slate-900 hover:bg-slate-800 ...">
-                          Enroll Now
+                          Details & Enrollment
                         </Button>
                       </Link>
                     ) : (
