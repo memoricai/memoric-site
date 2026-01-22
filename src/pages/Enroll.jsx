@@ -217,7 +217,7 @@ export default function Enroll() {
 
                 {/* Page Title */}
                 <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-10 text-center">
-                    {batch.title?.replace(/\s*-\s*#.*$/, "").trim() || batch.title}
+                    Memoric AI - [{batch.title}]
                 </h1>
 
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
@@ -245,7 +245,7 @@ export default function Enroll() {
                         </Card>
 
                         {/* Certification */}
-                        {batch?.certification && (
+                        {batch?.certification === 1 && (
                             <Card className="p-6 border-2 border-slate-100 gap-2">
                                 <h3 className="font-bold text-slate-900 mb-2 text-xl">Certification</h3>
                                 <p className="text-slate-600 text-sm">
