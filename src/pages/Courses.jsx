@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const BATCH_API_URL = import.meta.env.VITE_BATCH_API_URL;
 const API_TOKEN = import.meta.env.VITE_COURSE_API_TOKEN;
@@ -190,19 +191,11 @@ export default function Courses() {
                   {/* CTA Button */}
                   <div className="px-4 md:px-5 pt-0">
                     {batch.published === 1 ? (
-                      <a
-                        href={`${LMS_BATCH_URL}?batch=${batch.name}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block"
-                      >
-                        <Button className="w-full bg-slate-900 hover:bg-slate-800
-                                         text-white font-semibold py-3 md:py-4
-                                         text-sm md:text-base rounded-lg shadow-md 
-                                         hover:shadow-lg transition-all duration-300 cursor-pointer">
+                      <Link to={`/enroll/${batch.name}`} className="block">
+                        <Button className="w-full bg-slate-900 hover:bg-slate-800 ...">
                           Enroll Now
                         </Button>
-                      </a>
+                      </Link>
                     ) : (
                       <Button
                         disabled

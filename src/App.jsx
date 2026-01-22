@@ -4,6 +4,7 @@ import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Sections from "./pages/Sections";
+import Enroll from "./pages/Enroll";
 import { PrivacyPolicy, TermsAndConditions, RefundPolicy } from "./pages/Legal";
 import { Toaster } from "react-hot-toast";
 
@@ -37,6 +38,7 @@ export default function App() {
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-conditions" element={<TermsAndConditions />} />
           <Route path="/refund-policy" element={<RefundPolicy />} />
+          <Route path="/enroll/:batchName" element={<Enroll />} />
         </Routes>
       </main>
 
