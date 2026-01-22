@@ -48,6 +48,12 @@ export default function Courses() {
     return diffDays + 1;
   }
 
+
+  function cleanCourseTitle(title) {
+    if (!title) return "";
+    return title.replace(/\s*-\s*#.*$/, "").trim();
+  }
+
   useEffect(() => {
     const fetchBatches = async () => {
       try {
@@ -113,7 +119,7 @@ export default function Courses() {
                     {/* Title */}
                     <h3 className="text-center text-base sm:text-lg md:text-xl font-bold 
                                  text-slate-900 leading-snug ">
-                      {batch.title}
+                      {cleanCourseTitle(batch.title)}
                     </h3>
 
                     {/* Duration · Mode · Price */}
@@ -125,35 +131,18 @@ export default function Courses() {
                       </span>
                       <span>·</span>
                       <span>{batch.medium || "Online"} course</span>
-                      <span className="hidden sm:inline">·</span>
-                      <span className="font-semibold text-slate-900 sm:inline block">
-                        {batch.paid_batch
-                          ? `${batch.currency === "INR" ? "₹" : "$"}${batch.amount}`
-                          : "Free"}
-                      </span>
                     </div>
 
                     {/* Date & Time */}
                     <div className="flex flex-col items-center gap-1.5 text-xs md:text-sm text-slate-600">
                       <div className="flex items-center gap-1.5">
-                        <svg className="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-700 flex-shrink-0" 
-                             viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <svg className="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-700 flex-shrink-0"
+                          viewBox="0 0 24 24" fill="none" stroke="currentColor">
                           <path strokeLinecap="round" strokeWidth="2"
                             d="M8 7V3m8 4V3M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                         <span className="font-medium text-slate-700">
                           {formatDate(batch.start_date)} – {formatDate(batch.end_date)}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-1.5">
-                        <svg className="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-700 flex-shrink-0" 
-                             viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                          <path strokeWidth="2"
-                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span className="text-center">
-                          {formatTime(batch.start_time)} – {formatTime(batch.end_time)} {batch.timezone}
                         </span>
                       </div>
                     </div>
