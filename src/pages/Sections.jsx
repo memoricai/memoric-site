@@ -12,12 +12,12 @@ export default function Sections() {
         <Home />
       </section>
       
-      <section id="services">
-        <Services />
-      </section>
-      
       <section id="courses">
         <Courses />
+      </section>
+      
+      <section id="services">
+        <Services />
       </section>
       
       <section id="about">
