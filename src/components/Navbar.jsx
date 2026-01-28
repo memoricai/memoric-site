@@ -6,7 +6,7 @@ import { Link, useLocation } from "react-router-dom";
 export default function Navbar({ setSidebarOpen }) {
   const location = useLocation();
 
-  const navItems = ["Home", "Services", "Courses", "About", "Contact"];
+  const navItems = ["Home", "Courses", "Services",  "About", "Contact"];
 
   const getHref = (item) => {
     const hash = `#${item.toLowerCase()}`;
