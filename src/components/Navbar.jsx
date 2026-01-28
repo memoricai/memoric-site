@@ -2,11 +2,12 @@ import React from "react";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
+import logo from "../assets/MemoricAILogo.jpg";
 
 export default function Navbar({ setSidebarOpen }) {
   const location = useLocation();
 
-  const navItems = ["Home", "Services", "Courses", "About", "Contact"];
+  const navItems = ["Home", "Courses", "Services", "About", "Contact"];
 
   const getHref = (item) => {
     const hash = `#${item.toLowerCase()}`;
@@ -26,7 +27,12 @@ export default function Navbar({ setSidebarOpen }) {
           </Button>
 
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-3">
+            <img
+              src={logo}
+              alt="MemoricAI Logo"
+              className="h-9 w-auto object-contain rounded-lg"
+            />
             <span className="text-xl font-bold text-slate-900">MemoricAI</span>
           </Link>
         </div>

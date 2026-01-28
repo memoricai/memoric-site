@@ -131,7 +131,10 @@ export default function Courses() {
                         {getDurationInDays(batch.start_date, batch.end_date) > 1 ? "s" : ""}
                       </span>
                       <span>·</span>
-                      <span>{batch.medium || "Online"} course</span>
+                      <span className="font-semibold text-slate-900">
+                        {batch?.paid_batch ? "Paid Certified Course" : "Free Course"}
+                      </span>
+
                     </div>
 
                     {/* Date & Time */}
