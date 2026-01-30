@@ -4,6 +4,8 @@ import Courses from "./Courses";
 import About from "./About";
 import Contact from "./Contact";
 import Services from "./Services";
+import TrainingModules from "./TrainingModules";
+import CorporateTraining from "./CorporateTraining";
 
 export default function Sections() {
   return (
@@ -11,8 +13,16 @@ export default function Sections() {
       <section id="home">
         <Home />
       </section>
+
+      <section id="training-modules">
+        <TrainingModules />
+      </section>
+
+      <section id="corporate-training">
+        <CorporateTraining />
+      </section>
       
-      <section id="courses">
+      <section id="individual-courses">
         <Courses />
       </section>
       
