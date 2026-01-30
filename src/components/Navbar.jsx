@@ -37,14 +37,16 @@ export default function Navbar({ setSidebarOpen }) {
             item === "Training Modules" ? (
               <div key={item} className="relative group">
                 {/* Main Nav Item */}
-                <button
+                <a
+                  href="#training-modules"
                   className="px-4 py-2 text-sm font-medium text-slate-700 
-             hover:text-slate-900 hover:bg-slate-50 rounded-md 
-             transition-all flex items-center gap-1"
+                  hover:text-slate-900 hover:bg-slate-50 rounded-md 
+                  transition-all flex items-center gap-1"
                 >
                   <span>Training Modules</span>
                   <ChevronDown className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" />
-                </button>
+                </a>
+
 
                 {/* Dropdown */}
                 <div

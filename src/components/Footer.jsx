@@ -5,7 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 export default function Footer() {
   const location = useLocation();
 
-  const quickLinks = ["Home", "Courses", "About", "Contact"];
+  const quickLinks = ["Home", "Training Modules", "About", "Contact"];
 
   const getHref = (item) => {
     const hash = `#${item.toLowerCase()}`;
@@ -45,16 +45,46 @@ export default function Footer() {
           <div>
             <h4 className="font-bold mb-4">Quick Links</h4>
             <ul className="space-y-2 text-sm">
-              {quickLinks.map((item) => (
-                <li key={item}>
-                  <a
-                    href={getHref(item)}
-                    className="text-slate-400 hover:text-white transition-colors"
-                  >
-                    {item}
-                  </a>
-                </li>
-              ))}
+
+              {quickLinks.map((item) =>
+                item === "Training Modules" ? (
+                  <li key={item} className="flex flex-col gap-1">
+                    {/* Main */}
+                    <a
+                      href="#training-modules"
+                      className="text-slate-400 hover:text-white transition-colors"
+                    >
+                      Training Modules
+                    </a>
+
+                    {/* Sub */}
+                    <div className="ml-3 flex flex-col gap-1 text-slate-500">
+                      <a
+                        href="#corporate-training"
+                        className="hover:text-white transition-colors"
+                      >
+                        Corporate Training
+                      </a>
+                      <a
+                        href="#individual-courses"
+                        className="hover:text-white transition-colors"
+                      >
+                        Individual Courses
+                      </a>
+                    </div>
+                  </li>
+                ) : (
+                  <li key={item}>
+                    <a
+                      href={getHref(item)}
+                      className="text-slate-400 hover:text-white transition-colors"
+                    >
+                      {item}
+                    </a>
+                  </li>
+                )
+              )}
+
             </ul>
           </div>
 
