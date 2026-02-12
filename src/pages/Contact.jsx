@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Mail, MapPin, Send } from "lucide-react";
 import toast from 'react-hot-toast';
+
+const SETTINGS_URL = import.meta.env.VITE_MEMORIC_SETTINGS_API_URL;
+const API_TOKEN = import.meta.env.VITE_COURSE_API_TOKEN;
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -14,6 +17,21 @@ export default function Contact() {
     email: '',
     message: ''
   });
+
+  const [cuDescription, setCuDescription] = useState("");
+  useEffect(() => {
+    fetch(`${SETTINGS_URL}`, {
+      headers: {
+        "Authorization": `token ${API_TOKEN}`,
+        "Content-Type": "application/json"
+      }
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        setCuDescription(res?.data?.cu_description || "");
+      })
+      .catch((err) => console.error("Contact description API Error:", err));
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -89,18 +107,18 @@ export default function Contact() {
                        text-slate-900 mb-3 md:mb-4 lg:mb-6 tracking-tight">
             Contact Us
           </h2>
-          <p className="text-sm sm:text-base md:text-lg text-slate-600 
-                      max-w-2xl mx-auto px-2">
-            We're here to answer questions, discuss your AI training needs, or explore 
-            how we can support your organization.
-          </p>
+          <p
+            className="text-sm sm:text-base md:text-lg text-slate-600 
+            max-w-2xl mx-auto px-2 leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: cuDescription }}
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 lg:gap-12">
 
           {/* Contact Info Cards - Left Side */}
           <div className="lg:col-span-2 space-y-4 md:space-y-5 lg:space-y-6">
-            
+
             {/* Email Card */}
             <Card className="p-4 md:p-5 lg:p-6 border-2 border-slate-100 
                            hover:border-slate-900 transition-all duration-300">
@@ -113,8 +131,8 @@ export default function Contact() {
                   <h3 className="font-bold text-slate-900 mb-1 text-sm sm:text-base">
                     Email
                   </h3>
-                  <a href="mailto:support@memoricai.in" 
-                     className="text-xs sm:text-sm font-semibold text-slate-900 
+                  <a href="mailto:support@memoricai.in"
+                    className="text-xs sm:text-sm font-semibold text-slate-900 
                               hover:underline break-all">
                     support@memoricai.in
                   </a>

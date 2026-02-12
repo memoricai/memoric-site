@@ -1,78 +1,38 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
+const SETTINGS_URL = import.meta.env.VITE_MEMORIC_SETTINGS_API_URL;
+const API_TOKEN = import.meta.env.VITE_COURSE_API_TOKEN;
+
 export default function CorporateTraining() {
-  const trainingModules = [
-    {
-      id: 1,
-      title: "Essentials of AI",
-      level: "Basic Level, 6 Sessions",
-      sections: [
-        {
-          title: "AI Literacy",
-          items: [
-            "Origins of AI, current applications",
-            "Core technology concepts, basics of GenAI",
-            "AI and digitalization, adoption of AI in organizations"
-          ]
-        },
-        {
-          title: "AI Fluency",
-          items: [
-            "Basics of prompting, hands-on exercises",
-            "AI Agents design, basic usage",
-            "Tools for research, data analysis, imaging"
-          ]
-        },
-        {
-          title: "Key Takeaways",
-          items: [
-            "Learn the language of AI and the key terms used in industry.",
-            "Discover AI usefulness vs hype.",
-            "Understand the different use cases of AI and its effectiveness.",
-            "Assess organizational needs of AI adoption and rollout.",
-            "Improve individual productivity."
-          ]
-        }
-      ]
-    },
-    {
-      id: 2,
-      title: "Adoption of AI",
-      level: "Intermediate Level, 8 Sessions",
-      sections: [
-        {
-          title: "AI Literacy",
-          items: [
-            "Origins of AI, current applications",
-            "Managing AI and machine learning projects",
-            "Understanding GenAI models and their design",
-            "AI adoption in organizations - training, tool selection, achieving RoI"
-          ]
-        },
-        {
-          title: "AI Fluency",
-          items: [
-            "Understand prompts, different methods of prompting",
-            "Design of Agents, deployment choices",
-            "Address bias and hallucinations, responsible AI use, AI regulations",
-            "Learn GenAI tools for research, data analysis, imaging, creative inputs"
-          ]
-        },
-        {
-          title: "Key Takeaways",
-          items: [
-            "Grasp the language of AI, key terms that are used in the industry.",
-            "Understand the different use cases of AI and its effectiveness.",
-            "Learn about the AI ecosystem, the products, the services, and tools.",
-            "Review AI regulations and how they impact your products and services.",
-            "Improve ways to upskill your employees and restructure work flow processes in your organization."
-          ]
-        }
-      ]
-    }
-  ];
+  const [trainingModules, setTrainingModules] = useState([]);
+  const [ctDescription, setCtDescription] = useState("");
+
+  useEffect(() => {
+    fetch(`${SETTINGS_URL}`, {
+      headers: {
+        "Authorization": `token ${API_TOKEN}`,
+        "Content-Type": "application/json"
+      }
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        const modules = res?.data?.modules || [];
+
+        const formatted = modules.map((m, idx) => ({
+          id: idx + 1,
+          title: m.module,
+          level: m.level,
+          description: m.description
+        }));
+
+        setTrainingModules(formatted);
+        setCtDescription(res?.data?.ct_description || "");
+      })
+      .catch((err) => console.error("Corporate Training API Error:", err));
+  }, []);
+
 
   return (
     <div className="w-full bg-gradient-to-r from-slate-50 via-white to-slate-50 py-12 md:py-16 lg:py-20">
@@ -86,9 +46,7 @@ export default function CorporateTraining() {
           </h2>
           <p className="text-sm sm:text-base text-slate-700 
                       max-w-4xl mx-auto px-2 leading-relaxed">
-            Training Modules are delivered either on-site (company premise) or online (Zoom), featuring
-            live interactions, discussions, and demos. Each module can be customized to meet your
-            organizational needs.{" "}
+            <span dangerouslySetInnerHTML={{ __html: ctDescription }} />{" "}
             <a href="#contact" className="text-blue-600 hover:text-blue-800 font-semibold italic">
               Contact Us
             </a>{" "}
@@ -97,7 +55,12 @@ export default function CorporateTraining() {
         </div>
 
         {/* Training Modules Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 md:gap-6">
+        <div
+          className={`grid gap-5 md:gap-6 ${trainingModules.length <= 2
+              ? "grid-cols-1 md:grid-cols-2"
+              : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+            }`}
+        >
           {trainingModules.map((module) => (
             <Card
               key={module.id}
@@ -116,34 +79,18 @@ export default function CorporateTraining() {
               </div>
 
               {/* Card Content */}
-              <div className="space-y-3 md:space-y-3.5">
-                {module.sections.map((section, idx) => (
-                  <div key={idx}>
-                    <h4 className="text-sm md:text-base font-bold text-slate-900 mb-1.5">
-                      {section.title}
-                    </h4>
-                    
-                    {section.title === "Key Takeaways" ? (
-                      <ol className="list-decimal pl-5 space-y-1 text-xs md:text-sm text-slate-700 marker:font-bold marker:text-slate-900">
-                        {section.items.map((item, itemIdx) => (
-                          <li key={itemIdx} className="leading-relaxed">
-                            {item}
-                          </li>
-                        ))}
-                      </ol>
-                    ) : (
-                      <ul className="list-disc pl-5 space-y-1 text-xs md:text-sm text-slate-700 marker:text-slate-900">
-                        {section.items.map((item, itemIdx) => (
-                          <li key={itemIdx} className="leading-relaxed">
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+              <div
+                className="text-xs md:text-sm text-slate-700 leading-relaxed
+                [&_ol]:pl-5
+                [&_li[data-list='bullet']]:list-disc
+                [&_li[data-list='ordered']]:list-decimal
+                [&_li]:ml-4
+                [&_li]:mb-1
+                [&_ol>li::marker]:font-bold
+              [&_ol>li::marker]:text-slate-900"
+                dangerouslySetInnerHTML={{ __html: module.description }}
+              />
 
-                  </div>
-                ))}
-              </div>
             </Card>
           ))}
         </div>

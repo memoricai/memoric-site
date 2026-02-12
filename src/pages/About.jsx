@@ -1,21 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { BadgeCheck, Scale, Lightbulb, Target } from "lucide-react";
-import RahulImage from "@/assets/RahulDe.jpg";
-import SharmilaImage from "@/assets/Sharmila.jpg";
-import LewinImage from "@/assets/Lewin.jpeg";
 
-function TeamCard({ name, role, highlights, avatar }) {
+const SETTINGS_URL = import.meta.env.VITE_MEMORIC_SETTINGS_API_URL;
+const TEAM_MEMBER_URL = import.meta.env.VITE_MEMORIC_TEAM_MEMBER_API_URL;
+const API_TOKEN = import.meta.env.VITE_COURSE_API_TOKEN;
+
+const buildImageUrl = (img) => {
+  if (!img) return "";
+
+  if (img.startsWith("http")) return img;
+
+  return img.startsWith("/")
+    ? `${import.meta.env.VITE_BASE_URL}${img}`
+    : `${import.meta.env.VITE_BASE_URL}/${img}`;
+};
+
+
+function TeamCard({ name, role, description, avatar }) {
   return (
-    <Card
-      className="
-        p-5 md:p-6 lg:p-8
-        flex flex-col items-center gap-3 md:gap-4
-        border-2 border-slate-100
-        hover:border-slate-900 hover:shadow-xl
-        transition-all duration-300
-      "
-    >
+    <Card className="
+      p-5 md:p-6 lg:p-8
+      flex flex-col items-center gap-3 md:gap-4
+      border-2 border-slate-100
+      hover:border-slate-900 hover:shadow-xl
+      transition-all duration-300
+    ">
       {/* Avatar */}
       <div className="flex justify-center">
         <img
@@ -30,37 +40,93 @@ function TeamCard({ name, role, highlights, avatar }) {
         <h4 className="font-extrabold text-lg md:text-xl text-slate-900 tracking-tight">
           {name}
         </h4>
-        <p className="text-sm font-medium text-slate-600">
-          {role}
-        </p>
+        <p className="text-sm font-medium text-slate-600">{role}</p>
       </div>
 
       {/* Divider */}
       <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
 
-      {/* Highlights — LEFT ALIGNED + MOBILE FRIENDLY */}
-      <ul
+      {/* Description from Frappe */}
+      <div
         className="
-          w-full
-          max-w-md
-          text-sm text-slate-600
-          space-y-3
-          leading-relaxed
-          text-left
-        "
-      >
-        {highlights.map((item, idx) => (
-          <li key={idx} className="flex items-start gap-3">
-            <span className="mt-2 w-1.5 h-1.5 rounded-full bg-slate-900 flex-shrink-0" />
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
+        w-full max-w-md
+        text-xs sm:text-sm text-slate-600 leading-relaxed text-left
+        [&_ul]:space-y-3
+
+        [&_li]:leading-relaxed
+        [&_li]:pl-1
+
+        [&_li::marker]:text-slate-900
+        [&_li::marker]:font-semibold
+        [&_ol]:pl-5
+        [&_li[data-list='bullet']]:list-disc
+        [&_li[data-list='ordered']]:list-decimal
+        [&_li]:ml-4
+        [&_li]:mb-1
+        [&_ol>li::marker]:font-bold
+      [&_ol>li::marker]:text-slate-900
+      "
+        dangerouslySetInnerHTML={{ __html: description }}
+      />
+
+
+
     </Card>
   );
 }
 
+
 export default function About() {
+  const [mission, setMission] = useState("");
+  const [coreValues, setCoreValues] = useState([]);
+  const [team, setTeam] = useState([]);
+
+  useEffect(() => {
+    const fetchAboutData = async () => {
+      try {
+        const res = await fetch(
+          `${SETTINGS_URL}`,
+          {
+            headers: {
+              Authorization: `token ${API_TOKEN}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const data = await res.json();
+
+        setMission(data?.data?.our_mission || "");
+        setCoreValues(data?.data?.core_values || []);
+        setTeam(data?.data?.our_team || []);
+
+        const teamLinks = data?.data?.our_team || [];
+
+        if (teamLinks.length > 0) {
+          const teamRequests = teamLinks.map((t) =>
+            fetch(
+              `${TEAM_MEMBER_URL}/${t.team_member}`,
+              {
+                headers: {
+                  Authorization: `token ${API_TOKEN}`,
+                  "Content-Type": "application/json",
+                },
+              }
+            ).then((r) => r.json())
+          );
+
+          const teamResponses = await Promise.all(teamRequests);
+          setTeam(teamResponses.map((r) => r.data));
+        }
+        console.log("Fetched About Data:", data);
+
+      } catch (err) {
+        console.error("About API Error:", err);
+      }
+    };
+
+    fetchAboutData();
+  }, []);
+
   return (
     <div className="w-full bg-slate-50 py-12 md:py-16 lg:py-20">
       <div className="container mx-auto max-w-6xl px-4 sm:px-6 
@@ -86,10 +152,12 @@ export default function About() {
                 </div>
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">Our Mission</h2>
               </div>
-              <p className="text-sm sm:text-base md:text-lg text-slate-200 leading-relaxed">
-                Empowering organizations to adopt AI effectively and responsibly through training, strategic guidance, and applied research.
-              </p>
+              <div
+                className="text-sm sm:text-base md:text-lg text-slate-200 leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: mission }}
+              />
             </Card>
+
           </div>
         </section>
 
@@ -122,52 +190,44 @@ export default function About() {
         {/* Values */}
         <section>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center 
-                       mb-6 md:mb-8 lg:mb-12 text-slate-900 px-2">
+               mb-6 md:mb-8 lg:mb-12 text-slate-900 px-2">
             Our Core Values
           </h2>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 lg:gap-8">
+            {coreValues.map((value, idx) => {
+              const Icons = [BadgeCheck, Scale, Lightbulb];
+              const Icon = Icons[idx % Icons.length];
 
-            <Card className="p-5 md:p-6 lg:p-8 text-center border-2 border-slate-100 
-                           hover:border-slate-900 hover:shadow-xl transition-all duration-300">
-              <div className="w-12 sm:w-14 md:w-16 h-12 sm:h-14 md:h-16 bg-slate-900 rounded-lg 
-                            flex items-center justify-center mx-auto mb-4 md:mb-6">
-                <BadgeCheck className="w-6 sm:w-7 md:w-8 h-6 sm:h-7 md:h-8 text-white" />
-              </div>
-              <h4 className="font-bold text-base sm:text-lg md:text-xl text-slate-900 
-                           mb-2 md:mb-3">Quality</h4>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                We bring 40 years of experience with AI and digital technologies to deliver exceptional training, consulting, and research. We maintain the highest standards of excellence in everything we do.
-              </p>
-            </Card>
+              return (
+                <Card
+                  key={idx}
+                  className={`
+                    p-5 md:p-6 lg:p-8 text-center border-2 border-slate-100 
+                    hover:border-slate-900 hover:shadow-xl transition-all duration-300
+                    ${idx === coreValues.length - 1 ? "sm:col-span-2 lg:col-span-1" : ""}
+                  `}
+                >
 
-            <Card className="p-5 md:p-6 lg:p-8 text-center border-2 border-slate-100 
-                           hover:border-slate-900 hover:shadow-xl transition-all duration-300">
-              <div className="w-12 sm:w-14 md:w-16 h-12 sm:h-14 md:h-16 bg-slate-900 rounded-lg 
-                            flex items-center justify-center mx-auto mb-4 md:mb-6">
-                <Scale className="w-6 sm:w-7 md:w-8 h-6 sm:h-7 md:h-8 text-white" />
-              </div>
-              <h4 className="font-bold text-base sm:text-lg md:text-xl text-slate-900 
-                           mb-2 md:mb-3">Ethics</h4>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                We advocate and engage in ethical practices in our training, consulting, and research. We prioritize responsible and honest use of AI, including in our own work. We encourage use of open source tools and models.
-              </p>
-            </Card>
+                  <div className="w-12 sm:w-14 md:w-16 h-12 sm:h-14 md:h-16 bg-slate-900 rounded-lg 
+                        flex items-center justify-center mx-auto mb-4 md:mb-6">
+                    <Icon className="w-6 sm:w-7 md:w-8 h-6 sm:h-7 md:h-8 text-white" />
+                  </div>
 
-            <Card className="p-5 md:p-6 lg:p-8 text-center border-2 border-slate-100 
-                           hover:border-slate-900 hover:shadow-xl transition-all duration-300
-                           sm:col-span-2 lg:col-span-1">
-              <div className="w-12 sm:w-14 md:w-16 h-12 sm:h-14 md:h-16 bg-slate-900 rounded-lg 
-                            flex items-center justify-center mx-auto mb-4 md:mb-6">
-                <Lightbulb className="w-6 sm:w-7 md:w-8 h-6 sm:h-7 md:h-8 text-white" />
-              </div>
-              <h4 className="font-bold text-base sm:text-lg md:text-xl text-slate-900 
-                           mb-2 md:mb-3">Simplicity</h4>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                We communicate complex AI concepts clearly and accessibly, ensuring everyone can understand and apply them. We avoid use of confusing jargon. We emphasize practical uses and applications of AI.
-              </p>
-            </Card>
+                  <h4 className="font-bold text-base sm:text-lg md:text-xl text-slate-900 mb-2 md:mb-3">
+                    {value.core_value || value.title}
+                  </h4>
+
+                  <div
+                    className="prose prose-sm max-w-none text-xs sm:text-sm text-slate-600 leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: value.description }}
+                  />
+                </Card>
+              );
+            })}
           </div>
         </section>
+
 
         {/* Leadership */}
         <section>
@@ -177,45 +237,15 @@ export default function About() {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
-
-            <TeamCard
-              name="Rahul De’"
-              role="Founder and CEO"
-              avatar={RahulImage}
-              highlights={[
-                "PhD from the AI in Management Lab, Katz School of Business, University of Pittsburgh, 1993.",
-                "Professor (Retd) IIM Bangalore, also served as Dean (Programmes).",
-                "Has taught AI and IT Management to MBA students and executives since 1990.",
-                "Does research in AI, Open Source, and Digital Transformation. Has published 4 books, over 130 articles in scientific publications.",
-                "Listed as Top 10 AI Researchers in India by Analytics India Magazine in 2020.",
-                "He is the author of the textbook AI for Managers by Cengage, published in 2025."
-              ]}
-            />
-
-            <TeamCard
-              name="Sharmila Chakravarty"
-              role="Co-Founder and COO"
-              avatar={SharmilaImage}
-              highlights={[
-                "Software engineer by training, experience with AT&T and other technology firms.",
-                "MSc from University of Maryland.",
-                "Early career in technical development and presales management.",
-                "Experience in engineering design, financial management, and technology startups.",
-              ]}
-            />
-
-            <TeamCard
-              name="Lewin Sivamalai"
-              role="Instructor"
-              avatar={LewinImage}
-              highlights={[
-                "He has a PhD from IIM Bangalore",
-                "He is a seasoned data scientist and program manager, with over 12 years experience spanning IT Services, financial inclusion, data-driven governance, and experiential learning for corporate training.",
-                "He has taught at IIMB and other leading institutions.",
-                "Lewin brings a hands-on, human-centered approach to solving complex problems."
-              ]}
-            />
-
+            {team.map((member, idx) => (
+              <TeamCard
+                key={idx}
+                name={member.full_name}
+                role={member.role}
+                avatar={buildImageUrl(member.img)}
+                description={member.description}
+              />
+            ))}
           </div>
 
         </section>

@@ -5,11 +5,12 @@ import { Link } from "react-router-dom";
 
 const BATCH_API_URL = import.meta.env.VITE_BATCH_API_URL;
 const API_TOKEN = import.meta.env.VITE_COURSE_API_TOKEN;
-const LMS_BATCH_URL = import.meta.env.VITE_LMS_BATCH_URL;
+const SETTINGS_URL = import.meta.env.VITE_MEMORIC_SETTINGS_API_URL;
 
 export default function Courses() {
   const [batches, setBatches] = useState([]);
   const [batchLoading, setBatchLoading] = useState(true);
+  const [icDescription, setIcDescription] = useState("");
 
   function formatDate(dateStr) {
     if (!dateStr) return "";
@@ -69,7 +70,27 @@ export default function Courses() {
         setBatchLoading(false);
       }
     };
+
+    const fetchICDescription = async () => {
+      try {
+        const res = await fetch(
+          `${SETTINGS_URL}`,
+          {
+            headers: {
+              Authorization: `token ${API_TOKEN}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const data = await res.json();
+        setIcDescription(data?.data?.ic_description || "");
+      } catch (err) {
+        console.error("IC Description API Error:", err);
+      }
+    };
+
     fetchBatches();
+    fetchICDescription();
   }, []);
 
   if (batchLoading)
@@ -97,9 +118,11 @@ export default function Courses() {
                        text-slate-900 mb-3 md:mb-4 lg:mb-6 tracking-tight">
             Individual Courses
           </h2>
-          <p className="text-sm sm:text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-2">
-            Practical courses designed to help you implement AI effectively.
-          </p>
+          <div
+            className="text-sm sm:text-base md:text-lg text-slate-600 
+             max-w-2xl mx-auto px-2 leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: icDescription }}
+          />
         </div>
 
         {/* Courses Grid */}
