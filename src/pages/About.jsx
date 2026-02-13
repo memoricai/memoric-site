@@ -117,7 +117,6 @@ export default function About() {
           const teamResponses = await Promise.all(teamRequests);
           setTeam(teamResponses.map((r) => r.data));
         }
-        console.log("Fetched About Data:", data);
 
       } catch (err) {
         console.error("About API Error:", err);

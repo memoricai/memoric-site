@@ -26,7 +26,6 @@ export default function Services() {
 
                 setOsDescription(data?.data?.os_description || "");
                 setServices(data?.data?.services || []);
-                console.log("Fetched Services Data:", data);
             } catch (err) {
                 console.error("Services API Error:", err);
             }
