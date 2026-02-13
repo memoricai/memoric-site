@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
-import { BadgeCheck, Scale, Lightbulb, Target } from "lucide-react";
+import * as Icons from "lucide-react";
 
 const SETTINGS_URL = import.meta.env.VITE_MEMORIC_SETTINGS_API_URL;
 const TEAM_MEMBER_URL = import.meta.env.VITE_MEMORIC_TEAM_MEMBER_API_URL;
@@ -148,7 +148,7 @@ export default function About() {
               <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
                 <div className="w-10 h-10 md:w-12 md:h-12 bg-white/10 rounded-lg 
                               flex items-center justify-center flex-shrink-0">
-                  <Target className="w-5 h-5 md:w-6 md:h-6" />
+                  <Icons.Target className="w-5 h-5 md:w-6 md:h-6" />
                 </div>
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">Our Mission</h2>
               </div>
@@ -196,8 +196,7 @@ export default function About() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 lg:gap-8">
             {coreValues.map((value, idx) => {
-              const Icons = [BadgeCheck, Scale, Lightbulb];
-              const Icon = Icons[idx % Icons.length];
+              const IconComponent = Icons[value.icon] || Icons.HelpCircle;
 
               return (
                 <Card
@@ -211,11 +210,11 @@ export default function About() {
 
                   <div className="w-12 sm:w-14 md:w-16 h-12 sm:h-14 md:h-16 bg-slate-900 rounded-lg 
                         flex items-center justify-center mx-auto mb-4 md:mb-6">
-                    <Icon className="w-6 sm:w-7 md:w-8 h-6 sm:h-7 md:h-8 text-white" />
+                    <IconComponent className="w-6 h-6 text-white" />
                   </div>
 
                   <h4 className="font-bold text-base sm:text-lg md:text-xl text-slate-900 mb-2 md:mb-3">
-                    {value.core_value || value.title}
+                    {value.core_value}
                   </h4>
 
                   <div
