@@ -1,10 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import * as Icons from "lucide-react";
-
-const SETTINGS_URL = import.meta.env.VITE_MEMORIC_SETTINGS_API_URL;
-const TEAM_MEMBER_URL = import.meta.env.VITE_MEMORIC_TEAM_MEMBER_API_URL;
-const API_TOKEN = import.meta.env.VITE_COURSE_API_TOKEN;
+import useSettingsStore from "../store/useSettingsStore";
 
 const buildImageUrl = (img) => {
   if (!img) return "";
@@ -49,23 +46,21 @@ function TeamCard({ name, role, description, avatar }) {
       {/* Description from Frappe */}
       <div
         className="
-        w-full max-w-md
-        text-xs sm:text-sm text-slate-600 leading-relaxed text-left
-        [&_ul]:space-y-3
-
-        [&_li]:leading-relaxed
-        [&_li]:pl-1
-
-        [&_li::marker]:text-slate-900
-        [&_li::marker]:font-semibold
-        [&_ol]:pl-5
-        [&_li[data-list='bullet']]:list-disc
-        [&_li[data-list='ordered']]:list-decimal
-        [&_li]:ml-4
-        [&_li]:mb-1
-        [&_ol>li::marker]:font-bold
-      [&_ol>li::marker]:text-slate-900
-      "
+          w-full max-w-md
+          text-xs sm:text-sm text-slate-600 leading-relaxed text-left
+          [&_ul]:space-y-3
+          [&_li]:leading-relaxed
+          [&_li]:pl-1
+          [&_li::marker]:text-slate-900
+          [&_li::marker]:font-semibold
+          [&_ol]:pl-5
+          [&_li[data-list='bullet']]:list-disc
+          [&_li[data-list='ordered']]:list-decimal
+          [&_li]:ml-4
+          [&_li]:mb-1
+          [&_ol>li::marker]:font-bold
+          [&_ol>li::marker]:text-slate-900
+        "
         dangerouslySetInnerHTML={{ __html: description }}
       />
 
@@ -77,54 +72,27 @@ function TeamCard({ name, role, description, avatar }) {
 
 
 export default function About() {
-  const [mission, setMission] = useState("");
-  const [coreValues, setCoreValues] = useState([]);
-  const [team, setTeam] = useState([]);
+  const { settings, team, loading, fetchSettings } = useSettingsStore();
 
   useEffect(() => {
-    const fetchAboutData = async () => {
-      try {
-        const res = await fetch(
-          `${SETTINGS_URL}`,
-          {
-            headers: {
-              Authorization: `token ${API_TOKEN}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const data = await res.json();
+    fetchSettings();
+  }, [fetchSettings]);
 
-        setMission(data?.data?.our_mission || "");
-        setCoreValues(data?.data?.core_values || []);
-        setTeam(data?.data?.our_team || []);
+  const mission = settings?.our_mission ?? "";
+  const coreValues = settings?.core_values ?? [];
 
-        const teamLinks = data?.data?.our_team || [];
-
-        if (teamLinks.length > 0) {
-          const teamRequests = teamLinks.map((t) =>
-            fetch(
-              `${TEAM_MEMBER_URL}/${t.team_member}`,
-              {
-                headers: {
-                  Authorization: `token ${API_TOKEN}`,
-                  "Content-Type": "application/json",
-                },
-              }
-            ).then((r) => r.json())
-          );
-
-          const teamResponses = await Promise.all(teamRequests);
-          setTeam(teamResponses.map((r) => r.data));
-        }
-
-      } catch (err) {
-        console.error("About API Error:", err);
-      }
-    };
-
-    fetchAboutData();
-  }, []);
+  if (loading && !settings) {
+    return (
+      <div className="w-full bg-slate-50 py-12 md:py-16 lg:py-20">
+        <div className="container mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="animate-pulse space-y-8">
+            <div className="h-12 bg-slate-200 rounded w-48 mx-auto" />
+            <div className="h-40 bg-slate-200 rounded" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full bg-slate-50 py-12 md:py-16 lg:py-20">
@@ -159,32 +127,6 @@ export default function About() {
 
           </div>
         </section>
-
-        {/* Expertise */}
-        {/* <section>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center 
-                       mb-6 md:mb-8 lg:mb-12 text-slate-900 px-2">
-            What We Do Best
-          </h2>
-          <div className="flex justify-center">
-            <Card className="bg-white border-2 border-slate-100 p-5 md:p-8 lg:p-10 
-                           shadow-lg max-w-4xl w-full">
-              <div className="space-y-3 md:space-y-4 lg:space-y-6">
-                <p className="text-sm sm:text-base md:text-lg text-slate-700 leading-relaxed">
-                  Our team leverages expertise in AI technology, business management, and education
-                  to deliver practical solutions. We conduct research on AI governance
-                  and economic impact, guide organizations through secure AI implementation,
-                  and provide hands-on training for executives, educators, and students.
-                </p>
-                <p className="text-sm sm:text-base md:text-lg text-slate-700 leading-relaxed">
-                  Whether you're looking to understand AI's potential for your business,
-                  need help choosing the right tools, or want to build AI skills in your
-                  team, we work with you to unlock AI's value while ensuring responsible use.
-                </p>
-              </div>
-            </Card>
-          </div>
-        </section> */}
 
         {/* Values */}
         <section>

@@ -1,13 +1,21 @@
-import React from "react";
-import { Card } from "@/components/ui/card";
-import { Sparkles } from "lucide-react";
+import React, { useEffect } from "react";
 import Testimonials from "../components/Testimonials";
 import HeroIllustration from "../components/HeroIllustration";
 import logo from "../assets/MemoricAILogo.svg";
+import useSettingsStore from "../store/useSettingsStore";
 
 export default function Home() {
+  const { settings, fetchSettings } = useSettingsStore();
+
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
+
+  const showTestimonials = settings?.show_testimonials_on_site === 1;
+
   return (
     <div className="w-full text-slate-900 relative overflow-hidden">
+
       {/* Hero Section */}
       <div className="w-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 
                     pt-20 pb-16 md:pt-24 md:pb-20 lg:pt-28 lg:pb-24 relative">
@@ -16,6 +24,7 @@ export default function Home() {
         <div className="absolute bottom-10 right-20 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
           {/* Mobile Layout */}
           <div className="lg:hidden space-y-6">
             {/* Text Content */}
@@ -82,16 +91,18 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Testimonials Section */}
-      {/* <div className="py-12 md:py-16 lg:py-24 bg-slate-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 
-                       text-center mb-8 md:mb-12">
-            Testimonials
-          </h2>
-          <Testimonials />
+      {/* Testimonials — shown only when enabled in Memoric Settings */}
+      {showTestimonials && (
+        <div className="py-12 md:py-16 lg:py-24 bg-slate-50">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 
+                         text-center mb-8 md:mb-12">
+              Testimonials
+            </h2>
+            <Testimonials />
+          </div>
         </div>
-      </div> */}
+      )}
     </div>
   );
 }

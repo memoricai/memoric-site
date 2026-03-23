@@ -17,7 +17,7 @@ export default function Testimonials() {
     const fetchTestimonials = async () => {
       try {
         const response = await fetch(
-          `${TESTIMONIAL_API_URL}`,
+          `${TESTIMONIAL_API_URL}?fields=["*"]&filters=[["publish_on_site","=",1]]&order_by=published_on desc&limit=20`,
           {
             headers: {
               Authorization: `token ${API_TOKEN}`,

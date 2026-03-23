@@ -4,39 +4,29 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Mail, MapPin, Send } from "lucide-react";
-import toast from 'react-hot-toast';
-
-const SETTINGS_URL = import.meta.env.VITE_MEMORIC_SETTINGS_API_URL;
-const API_TOKEN = import.meta.env.VITE_COURSE_API_TOKEN;
+import toast from "react-hot-toast";
+import useSettingsStore from "../store/useSettingsStore";
 
 export default function Contact() {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    organization: '',
-    email: '',
-    message: ''
-  });
+  const { settings, fetchSettings } = useSettingsStore();
 
-  const [cuDescription, setCuDescription] = useState("");
   useEffect(() => {
-    fetch(`${SETTINGS_URL}`, {
-      headers: {
-        "Authorization": `token ${API_TOKEN}`,
-        "Content-Type": "application/json"
-      }
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        setCuDescription(res?.data?.cu_description || "");
-      })
-      .catch((err) => console.error("Contact description API Error:", err));
-  }, []);
+    fetchSettings();
+  }, [fetchSettings]);
+
+  const cuDescription = settings?.cu_description ?? "";
+
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    organization: "",
+    email: "",
+    message: "",
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const { firstName, lastName, organization, email, message } = formData;
+    const { firstName, email, message } = formData;
 
     if (!firstName || !email || !message) {
       toast.error("Please fill all required fields!");
@@ -48,50 +38,33 @@ export default function Contact() {
         `${import.meta.env.VITE_BASE_URL}/api/method/memoric_frappe.api.contact_us.send_contact_email`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            first_name: firstName,
-            last_name: lastName,
-            organization: organization,
-            email: email,
-            message: message,
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            organization: formData.organization,
+            email: formData.email,
+            message: formData.message,
           }),
         }
       );
 
       const data = await response.json();
-
-      if (!response.ok || data.exc) {
-        throw new Error(data.message || "Something went wrong");
-      }
+      if (!response.ok || data.exc) throw new Error(data.message || "Something went wrong");
 
       toast.success("Message sent successfully!");
-
-      setFormData({
-        firstName: "",
-        lastName: "",
-        organization: "",
-        email: "",
-        message: "",
-      });
-
+      setFormData({ firstName: "", lastName: "", organization: "", email: "", message: "" });
     } catch (error) {
       console.error("Contact form error:", error);
       toast.error("Failed to send message. Please try again.");
     }
   };
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey && e.target.name !== 'message') {
+    if (e.key === "Enter" && !e.shiftKey && e.target.name !== "message") {
       e.preventDefault();
       handleSubmit(e);
     }
@@ -116,10 +89,8 @@ export default function Contact() {
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 lg:gap-12">
 
-          {/* Contact Info Cards - Left Side */}
+          {/* Contact Info */}
           <div className="lg:col-span-2 space-y-4 md:space-y-5 lg:space-y-6">
-
-            {/* Email Card */}
             <Card className="p-4 md:p-5 lg:p-6 border-2 border-slate-100 
                            hover:border-slate-900 transition-all duration-300">
               <div className="flex items-start gap-3 md:gap-4">
@@ -128,19 +99,15 @@ export default function Contact() {
                   <Mail className="w-4 h-4 md:w-5 md:h-5 text-white" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="font-bold text-slate-900 mb-1 text-sm sm:text-base">
-                    Email
-                  </h3>
+                  <h3 className="font-bold text-slate-900 mb-1 text-sm sm:text-base">Email</h3>
                   <a href="mailto:support@memoricai.in"
-                    className="text-xs sm:text-sm font-semibold text-slate-900 
-                              hover:underline break-all">
+                    className="text-xs sm:text-sm font-semibold text-slate-900 hover:underline break-all">
                     support@memoricai.in
                   </a>
                 </div>
               </div>
             </Card>
 
-            {/* Office Card */}
             <Card className="p-4 md:p-5 lg:p-6 border-2 border-slate-100 
                            hover:border-slate-900 transition-all duration-300">
               <div className="flex items-start gap-3 md:gap-4">
@@ -149,124 +116,78 @@ export default function Contact() {
                   <MapPin className="w-4 h-4 md:w-5 md:h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900 mb-1 text-sm sm:text-base">
-                    Office
-                  </h3>
-                  <p className="text-xs sm:text-sm font-semibold text-slate-900">
-                    Bangalore, India
-                  </p>
+                  <h3 className="font-bold text-slate-900 mb-1 text-sm sm:text-base">Office</h3>
+                  <p className="text-xs sm:text-sm font-semibold text-slate-900">Bangalore, India</p>
                 </div>
               </div>
             </Card>
           </div>
 
-          {/* Contact Form - Right Side */}
+          {/* Form */}
           <div className="lg:col-span-3">
             <Card className="p-5 md:p-6 lg:p-8 border-2 border-slate-100 shadow-lg">
               <div className="space-y-4 md:space-y-5 lg:space-y-6">
 
-                {/* Name Fields */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5 lg:gap-6">
                   <div>
-                    <label className="block text-xs sm:text-sm font-semibold 
-                                    text-slate-900 mb-1.5 md:mb-2">
+                    <label className="block text-xs sm:text-sm font-semibold text-slate-900 mb-1.5 md:mb-2">
                       First Name <span className="text-red-500">*</span>
                     </label>
-                    <Input
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      onKeyPress={handleKeyPress}
+                    <Input name="firstName" value={formData.firstName}
+                      onChange={handleChange} onKeyPress={handleKeyPress}
                       placeholder="John"
-                      className="h-10 md:h-11 lg:h-12 border-slate-200 
-                               focus:border-slate-900 text-sm md:text-base"
-                    />
+                      className="h-10 md:h-11 lg:h-12 border-slate-200 focus:border-slate-900 text-sm md:text-base" />
                   </div>
-
                   <div>
-                    <label className="block text-xs sm:text-sm font-semibold 
-                                    text-slate-900 mb-1.5 md:mb-2">
+                    <label className="block text-xs sm:text-sm font-semibold text-slate-900 mb-1.5 md:mb-2">
                       Last Name
                     </label>
-                    <Input
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleChange}
-                      onKeyPress={handleKeyPress}
+                    <Input name="lastName" value={formData.lastName}
+                      onChange={handleChange} onKeyPress={handleKeyPress}
                       placeholder="Doe"
-                      className="h-10 md:h-11 lg:h-12 border-slate-200 
-                               focus:border-slate-900 text-sm md:text-base"
-                    />
+                      className="h-10 md:h-11 lg:h-12 border-slate-200 focus:border-slate-900 text-sm md:text-base" />
                   </div>
                 </div>
 
-                {/* Organization */}
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold 
-                                  text-slate-900 mb-1.5 md:mb-2">
+                  <label className="block text-xs sm:text-sm font-semibold text-slate-900 mb-1.5 md:mb-2">
                     Organization
                   </label>
-                  <Input
-                    name="organization"
-                    value={formData.organization}
-                    onChange={handleChange}
-                    onKeyPress={handleKeyPress}
+                  <Input name="organization" value={formData.organization}
+                    onChange={handleChange} onKeyPress={handleKeyPress}
                     placeholder="Your company or institution"
-                    className="h-10 md:h-11 lg:h-12 border-slate-200 
-                             focus:border-slate-900 text-sm md:text-base"
-                  />
+                    className="h-10 md:h-11 lg:h-12 border-slate-200 focus:border-slate-900 text-sm md:text-base" />
                 </div>
 
-                {/* Email */}
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold 
-                                  text-slate-900 mb-1.5 md:mb-2">
+                  <label className="block text-xs sm:text-sm font-semibold text-slate-900 mb-1.5 md:mb-2">
                     Email Address <span className="text-red-500">*</span>
                   </label>
-                  <Input
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    onKeyPress={handleKeyPress}
+                  <Input name="email" type="email" value={formData.email}
+                    onChange={handleChange} onKeyPress={handleKeyPress}
                     placeholder="john@example.com"
-                    className="h-10 md:h-11 lg:h-12 border-slate-200 
-                             focus:border-slate-900 text-sm md:text-base"
-                  />
+                    className="h-10 md:h-11 lg:h-12 border-slate-200 focus:border-slate-900 text-sm md:text-base" />
                 </div>
 
-                {/* Message */}
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold 
-                                  text-slate-900 mb-1.5 md:mb-2">
+                  <label className="block text-xs sm:text-sm font-semibold text-slate-900 mb-1.5 md:mb-2">
                     Message <span className="text-red-500">*</span>
                   </label>
-                  <Textarea
-                    name="message"
-                    value={formData.message}
+                  <Textarea name="message" value={formData.message}
                     onChange={handleChange}
                     placeholder="Tell us how we can help you..."
-                    className="min-h-28 sm:min-h-32 md:min-h-40 border-slate-200 
-                             focus:border-slate-900 resize-none text-sm md:text-base"
-                  />
+                    className="min-h-28 sm:min-h-32 md:min-h-40 border-slate-200 focus:border-slate-900 resize-none text-sm md:text-base" />
                 </div>
 
-                {/* Submit Button */}
-                <Button
-                  onClick={handleSubmit}
+                <Button onClick={handleSubmit}
                   className="w-full bg-slate-900 hover:bg-slate-800 text-white 
-                           font-semibold py-3 md:py-4 lg:py-6 text-sm md:text-base 
-                           group cursor-pointer"
-                >
+                           font-semibold py-3 md:py-4 lg:py-6 text-sm md:text-base group cursor-pointer">
                   Send Message
-                  <Send className="ml-2 w-3.5 h-3.5 md:w-4 md:h-4 
-                                 group-hover:translate-x-1 transition-transform" />
+                  <Send className="ml-2 w-3.5 h-3.5 md:w-4 md:h-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
-
               </div>
             </Card>
           </div>
-
         </div>
       </div>
     </div>
