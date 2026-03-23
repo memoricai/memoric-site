@@ -51,7 +51,7 @@ export default function CompanyLogosSlider() {
     const fetchCompanies = async () => {
       try {
         const response = await fetch(
-          `${COMPANY_API_URL}`,
+          `${COMPANY_API_URL}&filters=[["show_on_site","=",1]]`,
           {
             headers: {
               Authorization: `token ${import.meta.env.VITE_COURSE_API_TOKEN}`,

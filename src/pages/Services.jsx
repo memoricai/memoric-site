@@ -60,7 +60,7 @@ export default function Services() {
 
 
                 {/* Call to Action */}
-        <div className="text-center mt-10 md:mt-12 lg:mt-16">
+        <div className="text-center pb-12 mt-10 md:mt-12 md:pb-16 lg:mt-16 lg:pb-20">
           <a href="#contact">
             <Button className="bg-slate-900 hover:bg-slate-800 text-white 
                              px-6 md:px-8 py-3 md:py-4 
@@ -74,10 +74,13 @@ export default function Services() {
 
       </div>
 
-      {/* Company Logos */}
-      <div className="mt-12 md:mt-16 lg:mt-20">
-        <CompanyLogosSlider />
-      </div>
+     {/* Company Logos — shown only when enabled in Memoric Settings */}
+      {settings?.show_companies_on_site === 1 && (
+        <div >
+          <CompanyLogosSlider />
+        </div>
+      )}
+
     </div>
   );
 }
