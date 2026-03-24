@@ -37,6 +37,11 @@ function formatDate(dateStr) {
   return new Date(dateStr).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
 }
 
+function cleanCourseTitle(title) {
+  if (!title) return "";
+  return title.replace(/\s*-\s*#.*$/, "").trim();
+}
+
 /* ─── Not-available banner ────────────────────────────────────────────────── */
 function UnavailableBanner({ batch }) {
   return (
@@ -113,7 +118,12 @@ export default function Enroll() {
         );
         const data = await res.json();
         if (!res.ok) throw new Error();
-        setSessions(data.data || []);
+        const sorted = (data.data || []).sort((a, b) => {
+          const dateTimeA = new Date(`${a.date}T${a.time || "00:00:00"}`);
+          const dateTimeB = new Date(`${b.date}T${b.time || "00:00:00"}`);
+          return dateTimeA - dateTimeB;
+        });
+        setSessions(sorted);
       } catch (err) {
         console.error(err);
       }
@@ -186,7 +196,7 @@ export default function Enroll() {
       <div className="max-w-6xl mx-auto px-4">
 
         <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-10 text-center">
-          Memoric AI — {batch.title}
+          Memoric AI — {cleanCourseTitle(batch.title)}
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
