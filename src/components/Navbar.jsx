@@ -7,9 +7,10 @@ import logo from "../assets/MemoricAILogo.svg";
 export default function Navbar({ setSidebarOpen }) {
   const location = useLocation();
 
-  const navItems = ["Home", "Training Modules", "Services", "About", "Contact"];
+  const navItems = ["Home", "Training Modules", "Services", "About", "Blog", "Contact"];
 
   const getHref = (item) => {
+    if (item === "Blog") return "/blog";
     const hash = `#${item.toLowerCase()}`;
     return location.pathname === "/" ? hash : `/${hash}`;
   };
@@ -72,6 +73,16 @@ export default function Navbar({ setSidebarOpen }) {
                   </a>
                 </div>
               </div>
+            ) : item === "Blog" ? (
+              <Link
+                key={item}
+                to="/blog"
+                className="px-4 py-2 text-sm font-medium text-slate-700 
+                   hover:text-slate-900 hover:bg-slate-50 rounded-md 
+                   transition-all"
+              >
+                Blog
+              </Link>
             ) : (
               <a
                 key={item}
