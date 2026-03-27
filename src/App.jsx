@@ -5,6 +5,8 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Sections from "./pages/Sections";
 import Enroll from "./pages/Enroll";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 import { PrivacyPolicy, TermsAndConditions, RefundPolicy } from "./pages/Legal";
 import { Toaster } from "react-hot-toast";
 
@@ -33,6 +35,10 @@ export default function App() {
         <Routes>
           {/* Main site */}
           <Route path="/" element={<Sections />} />
+
+          {/* Blog */}
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
 
           {/* Legal pages */}
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />

@@ -5,9 +5,10 @@ import { Link, useLocation } from "react-router-dom";
 
 export default function Sidebar({ setOpen }) {
   const location = useLocation();
-  const navItems = ["Home", "Training Modules", "Services", "About", "Contact"];
+  const navItems = ["Home", "Training Modules", "Services", "About", "Blog", "Contact"];
 
   const getHref = (item) => {
+    if (item === "Blog") return "/blog";
     const hash = `#${item.toLowerCase()}`;
     return location.pathname === "/" ? hash : `/${hash}`;
   };
@@ -38,11 +39,9 @@ export default function Sidebar({ setOpen }) {
 
         {/* Navigation */}
         <nav className="flex flex-col p-4 gap-2">
-
           {navItems.map((item) =>
             item === "Training Modules" ? (
               <div key={item} className="flex flex-col">
-
                 {/* Main Link */}
                 <a
                   href="#training-modules"
@@ -70,6 +69,15 @@ export default function Sidebar({ setOpen }) {
                   </a>
                 </div>
               </div>
+            ) : item === "Blog" ? (
+              <Link
+                key={item}
+                to="/blog"
+                onClick={() => setOpen(false)}
+                className="px-4 py-3 text-slate-700 hover:bg-slate-100 hover:text-slate-900 rounded-lg transition-all font-medium"
+              >
+                Blog
+              </Link>
             ) : (
               <a
                 key={item}
@@ -81,7 +89,6 @@ export default function Sidebar({ setOpen }) {
               </a>
             )
           )}
-
         </nav>
       </div>
     </div>
