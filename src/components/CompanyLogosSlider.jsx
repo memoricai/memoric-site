@@ -200,7 +200,7 @@ export default function CompanyLogosSlider() {
             Trusted By
           </h3>
           <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900">
-            Organizations We've Partnered With
+            Organizations We've Collaborated With
           </h2>
         </div>
 
