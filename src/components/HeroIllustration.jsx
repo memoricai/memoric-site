@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, Users, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -7,10 +7,62 @@ const API_TOKEN = import.meta.env.VITE_COURSE_API_TOKEN;
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const HERO_API_URL = import.meta.env.VITE_HERO_API_URL;
 
+const VIDEO_EXTENSIONS = ['.mp4', '.webm', '.ogg', '.mov'];
+
+function isVideo(url) {
+  return VIDEO_EXTENSIONS.some(ext => url.toLowerCase().includes(ext));
+}
+
+function resolveUrl(raw) {
+  const trimmed = typeof raw === 'string' ? raw.trim() : '';
+  if (!trimmed) return '';
+  if (trimmed.startsWith('http')) return trimmed;
+  return trimmed.startsWith('/') ? `${BASE_URL}${trimmed}` : `${BASE_URL}/${trimmed}`;
+}
+
+/* ---------- Single slide: image or video ---------- */
+function Slide({ src, active }) {
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el) return;
+    if (active) {
+      el.currentTime = 0;
+      el.play().catch(() => {});
+    } else {
+      el.pause();
+    }
+  }, [active]);
+
+  if (isVideo(src)) {
+    return (
+      <video
+        ref={videoRef}
+        src={src}
+        muted
+        loop
+        playsInline
+        className="max-h-full max-w-full object-contain rounded-sm shadow-2xl"
+        style={{ display: active ? 'block' : 'none' }}
+      />
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt="Announcement"
+      className="max-h-full max-w-full object-contain rounded-sm shadow-2xl"
+      style={{ display: active ? 'block' : 'none' }}
+    />
+  );
+}
+
 export default function HeroIllustration() {
   const [heroData, setHeroData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     const fetchHeroSettings = async () => {
@@ -19,17 +71,17 @@ export default function HeroIllustration() {
         const response = await fetch(HERO_API_URL, {
           headers: {
             Authorization: `token ${API_TOKEN}`,
-            "Content-Type": "application/json",
-            "Cache-Control": "no-cache",
-            Pragma: "no-cache",
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache',
+            Pragma: 'no-cache',
           },
-          cache: "no-store",
+          cache: 'no-store',
         });
 
         const data = await response.json();
         setHeroData(data.message);
       } catch (error) {
-        console.error("Error fetching hero settings:", error);
+        console.error('Error fetching hero settings:', error);
       } finally {
         setLoading(false);
       }
@@ -38,74 +90,54 @@ export default function HeroIllustration() {
     fetchHeroSettings();
   }, []);
 
-  const batchDetails = heroData?.batch;
+  const media = useMemo(() => {
+    const raw = heroData?.hero_gifimage;
+    if (!raw) return [];
 
-  // Parse images - support both single image and array
-  const images = React.useMemo(() => {
-    if (!heroData?.hero_gifimage) return [];
-
-    // If it's already an array (from slideshow or API)
-    if (Array.isArray(heroData.hero_gifimage)) {
-      return heroData.hero_gifimage.map(img => {
-        // Handle both absolute and relative paths
-        if (img.startsWith('http')) return img;
-        return img.startsWith('/') ? `${BASE_URL}${img}` : `${BASE_URL}/${img}`;
-      });
+    let list = [];
+    if (Array.isArray(raw)) {
+      list = raw;
+    } else if (typeof raw === 'string' && raw.includes(',')) {
+      list = raw.split(',');
+    } else if (typeof raw === 'string') {
+      list = [raw];
     }
 
-    // If it's a comma-separated string
-    if (typeof heroData.hero_gifimage === 'string' && heroData.hero_gifimage.includes(',')) {
-      return heroData.hero_gifimage.split(',').map(img => {
-        const trimmed = img.trim();
-        if (trimmed.startsWith('http')) return trimmed;
-        return trimmed.startsWith('/') ? `${BASE_URL}${trimmed}` : `${BASE_URL}/${trimmed}`;
-      });
-    }
-
-    // Single image
-    const img = heroData.hero_gifimage;
-    if (img.startsWith('http')) return [img];
-    return img.startsWith('/') ? [`${BASE_URL}${img}`] : [`${BASE_URL}/${img}`];
+    return list.map(resolveUrl).filter(Boolean);
   }, [heroData]);
 
-  // Auto-rotate carousel every 5 seconds
-  useEffect(() => {
-    if (images.length <= 1) return;
+  const batchDetails = heroData?.batch;
 
-    const timer = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+  /* Auto-advance: images 5s, videos wait for 'ended' event */
+  useEffect(() => {
+    if (media.length <= 1) return;
+    const current = media[currentIndex];
+
+    if (isVideo(current)) return; // video advances via onEnded
+
+    const timer = setTimeout(() => {
+      setCurrentIndex(prev => (prev + 1) % media.length);
     }, 5000);
 
-    return () => clearInterval(timer);
-  }, [images]);
+    return () => clearTimeout(timer);
+  }, [currentIndex, media]);
 
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length);
-  };
+  const next = () => setCurrentIndex(prev => (prev + 1) % media.length);
+  const prev = () => setCurrentIndex(prev => (prev - 1 + media.length) % media.length);
 
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
-
-  const formatDate = (dateStr) => {
+  const formatDate = dateStr => {
     if (!dateStr) return '';
     return new Date(dateStr).toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
+      day: '2-digit', month: 'short', year: 'numeric',
     });
   };
 
-  const formatTime = (timeStr) => {
+  const formatTime = timeStr => {
     if (!timeStr) return '';
     const [h, m] = timeStr.split(':');
     const d = new Date();
     d.setHours(h, m);
-    return d.toLocaleTimeString('en-IN', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    });
+    return d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
   };
 
   /* ---------------- Loading ---------------- */
@@ -121,59 +153,81 @@ export default function HeroIllustration() {
     );
   }
 
-  /* ---------------- Image Gallery/Carousel ---------------- */
-  if (!batchDetails && images.length > 0) {
+  /* ---------------- Media carousel ---------------- */
+  if (!batchDetails && media.length > 0) {
     return (
       <div className="relative w-full max-w-2xl mx-auto">
         <Card className="w-full aspect-[4/3] bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-2xl overflow-hidden p-0">
-          <div className="relative w-full h-full group">
-            {/* Main Image Container */}
-            <div className="absolute inset-0 flex justify-center items-center p-2 sm:p-4 md:p-6">
-              <img
-                key={images[currentImageIndex]} 
-                src={images[currentImageIndex]} 
-                alt={`Announcement ${currentImageIndex + 1}`}
-                className="max-h-full max-w-full object-contain rounded-sm shadow-2xl"
-              />
+          <div className="relative w-full h-full">
+
+            {/* Slides — all rendered, only active is visible (keeps video preloaded) */}
+            <div className="absolute inset-0 flex items-center justify-center p-2 sm:p-4 md:p-6">
+              {media.map((src, idx) => (
+                <Slide
+                  key={src}
+                  src={src}
+                  active={idx === currentIndex}
+                />
+              ))}
             </div>
 
-            {/* Gradient Overlay */}
+            {/* Video: auto-advance on end */}
+            {isVideo(media[currentIndex]) && (
+              <video
+                key={`adv-${currentIndex}`}
+                src={media[currentIndex]}
+                style={{ display: 'none' }}
+                onEnded={next}
+              />
+            )}
+
+            {/* Edge gradients */}
             <div className="absolute inset-0 pointer-events-none">
               <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-slate-900/20 to-transparent" />
               <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-slate-900/20 to-transparent" />
             </div>
 
-            {/* Carousel Controls */}
-            {images.length > 1 && (
+            {/* Video indicator badge */}
+            {isVideo(media[currentIndex]) && (
+              <div className="absolute top-3 left-3 z-20 bg-black/50 backdrop-blur-sm text-white text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                Video
+              </div>
+            )}
+
+            {/* Nav controls */}
+            {media.length > 1 && (
               <>
                 <button
-                  onClick={prevImage}
+                  onClick={prev}
                   className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm hover:bg-white text-slate-900 rounded-full p-2 sm:p-2.5 opacity-80 hover:opacity-100 transition-all duration-300 border border-white/50 shadow-xl z-20"
-                  aria-label="Previous image"
+                  aria-label="Previous"
                 >
                   <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
 
                 <button
-                  onClick={nextImage}
+                  onClick={next}
                   className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm hover:bg-white text-slate-900 rounded-full p-2 sm:p-2.5 opacity-80 hover:opacity-100 transition-all duration-300 border border-white/50 shadow-xl z-20"
-                  aria-label="Next image"
+                  aria-label="Next"
                 >
                   <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
 
-                {/* Dots Indicator */}
-                <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2 z-20">
-                  {images.map((_, idx) => (
+                {/* Dots — with video icon for video slides */}
+                <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 sm:gap-2 z-20">
+                  {media.map((src, idx) => (
                     <button
                       key={idx}
-                      onClick={() => setCurrentImageIndex(idx)}
-                      className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 ${
-                        idx === currentImageIndex
-                          ? 'bg-white w-6 sm:w-8 shadow-lg'
-                          : 'bg-white/60 hover:bg-white/80 w-1.5 sm:w-2'
+                      onClick={() => setCurrentIndex(idx)}
+                      aria-label={`Go to slide ${idx + 1}`}
+                      className={`transition-all duration-300 rounded-full ${
+                        idx === currentIndex
+                          ? 'bg-white w-6 sm:w-8 h-1.5 sm:h-2 shadow-lg'
+                          : isVideo(src)
+                          ? 'bg-red-400/80 hover:bg-red-300 w-1.5 sm:w-2 h-1.5 sm:h-2'
+                          : 'bg-white/60 hover:bg-white/80 w-1.5 sm:w-2 h-1.5 sm:h-2'
                       }`}
-                      aria-label={`Go to image ${idx + 1}`}
                     />
                   ))}
                 </div>
@@ -185,11 +239,10 @@ export default function HeroIllustration() {
     );
   }
 
-  /* ---------------- Announcement ---------------- */
+  /* ---------------- Batch announcement ---------------- */
   if (batchDetails) {
     return (
       <div className="relative w-full max-w-2xl mx-auto">
-        {/* Announcement badge */}
         <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
           <Badge className="bg-white/10 backdrop-blur-sm border border-white/20 text-white px-3 py-1 text-xs font-medium shadow-lg flex items-center gap-1.5">
             <Sparkles className="w-3 h-3 text-blue-400" />
@@ -197,7 +250,6 @@ export default function HeroIllustration() {
           </Badge>
         </div>
 
-        {/* Subtle glow */}
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
 
@@ -214,29 +266,23 @@ export default function HeroIllustration() {
               </p>
             )}
 
-            <div className="grid gap-3 text-sm md:text-base text-slate-300">
-              <div className="grid gap-3 text-xs md:text-sm text-slate-300">
-               <Calendar className="w-4 h-4" />
-                <span className="text-xs sm:text-sm md:text-base">
-                  {formatDate(batchDetails.start_date)} – {formatDate(batchDetails.end_date)}
-                </span>
+            <div className="grid gap-3 text-xs md:text-sm text-slate-300">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 shrink-0" />
+                <span>{formatDate(batchDetails.start_date)} – {formatDate(batchDetails.end_date)}</span>
               </div>
 
               {batchDetails.start_time && (
                 <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4" />
-                  <span className="text-xs sm:text-sm md:text-base">
-                    {formatTime(batchDetails.start_time)} – {formatTime(batchDetails.end_time)} {batchDetails.timezone}
-                  </span>
+                  <Clock className="w-4 h-4 shrink-0" />
+                  <span>{formatTime(batchDetails.start_time)} – {formatTime(batchDetails.end_time)} {batchDetails.timezone}</span>
                 </div>
               )}
 
               {batchDetails.seat_count && (
                 <div className="flex items-center gap-2">
-                   <Users className="w-4 h-4" />
-                  <span className="text-xs sm:text-sm md:text-base">
-                    {batchDetails.seat_count} seats announced
-                  </span>
+                  <Users className="w-4 h-4 shrink-0" />
+                  <span>{batchDetails.seat_count} seats announced</span>
                 </div>
               )}
             </div>
