@@ -1,16 +1,21 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, Users, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, Clock, Users, Sparkles, ChevronLeft, ChevronRight, Volume2, VolumeX, Music } from 'lucide-react';
 
 const API_TOKEN = import.meta.env.VITE_COURSE_API_TOKEN;
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const HERO_API_URL = import.meta.env.VITE_HERO_API_URL;
 
 const VIDEO_EXTENSIONS = ['.mp4', '.webm', '.ogg', '.mov'];
+const AUDIO_EXTENSIONS = ['.mp3', '.wav', '.aac', '.flac', '.m4a', '.oga'];
 
 function isVideo(url) {
   return VIDEO_EXTENSIONS.some(ext => url.toLowerCase().includes(ext));
+}
+
+function isAudio(url) {
+  return AUDIO_EXTENSIONS.some(ext => url.toLowerCase().includes(ext));
 }
 
 function resolveUrl(raw) {
@@ -20,8 +25,72 @@ function resolveUrl(raw) {
   return trimmed.startsWith('/') ? `${BASE_URL}${trimmed}` : `${BASE_URL}/${trimmed}`;
 }
 
-/* ---------- Single slide: image or video ---------- */
-function Slide({ src, active }) {
+/* ---------- Global mute button (top-right corner) ---------- */
+function MuteButton({ muted, onToggle }) {
+  return (
+    <button
+      onClick={onToggle}
+      className="absolute top-3 right-3 z-20 bg-black/50 backdrop-blur-sm text-white rounded-full p-2 hover:bg-black/70 transition-all duration-200 shadow-lg"
+      aria-label={muted ? 'Unmute' : 'Mute'}
+    >
+      {muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+    </button>
+  );
+}
+
+/* ---------- Audio-only slide ---------- */
+function AudioSlide({ src, active, muted }) {
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    const el = audioRef.current;
+    if (!el) return;
+    if (active) {
+      el.currentTime = 0;
+      el.play().catch(() => {});
+    } else {
+      el.pause();
+    }
+  }, [active]);
+
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.muted = muted;
+  }, [muted]);
+
+  return (
+    <div
+      style={{ display: active ? 'flex' : 'none' }}
+      className="flex-col items-center justify-center gap-4 w-full h-full"
+    >
+      {/* Visual waveform placeholder */}
+      <div className="flex items-end gap-1 h-16">
+        {Array.from({ length: 20 }).map((_, i) => (
+          <div
+            key={i}
+            className={`w-2 rounded-full transition-all duration-300 ${
+              active && !muted ? 'bg-blue-400 animate-pulse' : 'bg-white/30'
+            }`}
+            style={{
+              height: `${20 + Math.sin((i / 19) * Math.PI * 3) * 30 + 10}px`,
+              animationDelay: `${i * 60}ms`,
+              animationDuration: `${600 + (i % 5) * 120}ms`,
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="flex items-center gap-2 text-white/80 text-sm font-medium">
+        <Music className="w-4 h-4 text-blue-400" />
+        <span>Audio</span>
+      </div>
+
+      <audio ref={audioRef} src={src} loop muted={muted} />
+    </div>
+  );
+}
+
+/* ---------- Single video slide ---------- */
+function VideoSlide({ src, active, muted, onEnded }) {
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -35,20 +104,26 @@ function Slide({ src, active }) {
     }
   }, [active]);
 
-  if (isVideo(src)) {
-    return (
-      <video
-        ref={videoRef}
-        src={src}
-        muted
-        loop
-        playsInline
-        className="max-h-full max-w-full object-contain rounded-sm shadow-2xl"
-        style={{ display: active ? 'block' : 'none' }}
-      />
-    );
-  }
+  useEffect(() => {
+    if (videoRef.current) videoRef.current.muted = muted;
+  }, [muted]);
 
+  return (
+    <video
+      ref={videoRef}
+      src={src}
+      muted={muted}
+      loop={!onEnded}
+      playsInline
+      onEnded={onEnded}
+      className="max-h-full max-w-full object-contain rounded-sm shadow-2xl"
+      style={{ display: active ? 'block' : 'none' }}
+    />
+  );
+}
+
+/* ---------- Single image slide ---------- */
+function ImageSlide({ src, active }) {
   return (
     <img
       src={src}
@@ -59,10 +134,59 @@ function Slide({ src, active }) {
   );
 }
 
+/* ---------- Unified slide dispatcher ---------- */
+function Slide({ src, active, muted, onEnded }) {
+  if (isVideo(src)) return <VideoSlide src={src} active={active} muted={muted} onEnded={onEnded} />;
+  if (isAudio(src)) return <AudioSlide src={src} active={active} muted={muted} />;
+  return <ImageSlide src={src} active={active} />;
+}
+
+/* ---------- Slide type badge ---------- */
+function SlideTypeBadge({ src }) {
+  if (isVideo(src)) {
+    return (
+      <div className="absolute top-3 left-3 z-20 bg-black/50 backdrop-blur-sm text-white text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1.5">
+        <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+        Video
+      </div>
+    );
+  }
+  if (isAudio(src)) {
+    return (
+      <div className="absolute top-3 left-3 z-20 bg-black/50 backdrop-blur-sm text-white text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1.5">
+        <Music className="w-3 h-3 text-blue-400" />
+        Audio
+      </div>
+    );
+  }
+  return null;
+}
+
+/* ---------- Dot indicator ---------- */
+function SlideDot({ src, active, onClick, index }) {
+  return (
+    <button
+      onClick={onClick}
+      aria-label={`Go to slide ${index + 1}`}
+      className={`transition-all duration-300 rounded-full ${
+        active
+          ? 'bg-white w-6 sm:w-8 h-1.5 sm:h-2 shadow-lg'
+          : isVideo(src)
+          ? 'bg-red-400/80 hover:bg-red-300 w-1.5 sm:w-2 h-1.5 sm:h-2'
+          : isAudio(src)
+          ? 'bg-blue-400/80 hover:bg-blue-300 w-1.5 sm:w-2 h-1.5 sm:h-2'
+          : 'bg-white/60 hover:bg-white/80 w-1.5 sm:w-2 h-1.5 sm:h-2'
+      }`}
+    />
+  );
+}
+
 export default function HeroIllustration() {
   const [heroData, setHeroData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
+  // Start muted — browsers block autoplay with sound; user can unmute
+  const [muted, setMuted] = useState(true);
 
   useEffect(() => {
     const fetchHeroSettings = async () => {
@@ -77,7 +201,6 @@ export default function HeroIllustration() {
           },
           cache: 'no-store',
         });
-
         const data = await response.json();
         setHeroData(data.message);
       } catch (error) {
@@ -86,14 +209,12 @@ export default function HeroIllustration() {
         setLoading(false);
       }
     };
-
     fetchHeroSettings();
   }, []);
 
   const media = useMemo(() => {
     const raw = heroData?.hero_gifimage;
     if (!raw) return [];
-
     let list = [];
     if (Array.isArray(raw)) {
       list = raw;
@@ -102,28 +223,29 @@ export default function HeroIllustration() {
     } else if (typeof raw === 'string') {
       list = [raw];
     }
-
     return list.map(resolveUrl).filter(Boolean);
   }, [heroData]);
 
   const batchDetails = heroData?.batch;
 
-  /* Auto-advance: images 5s, videos wait for 'ended' event */
+  /* Auto-advance: images 5s, audio 10s, videos wait for onEnded */
   useEffect(() => {
     if (media.length <= 1) return;
     const current = media[currentIndex];
+    if (isVideo(current)) return; // video/audio advance via onEnded / timeout
 
-    if (isVideo(current)) return; // video advances via onEnded
-
+    const duration = isAudio(current) ? 10000 : 5000;
     const timer = setTimeout(() => {
       setCurrentIndex(prev => (prev + 1) % media.length);
-    }, 5000);
+    }, duration);
 
     return () => clearTimeout(timer);
   }, [currentIndex, media]);
 
   const next = () => setCurrentIndex(prev => (prev + 1) % media.length);
   const prev = () => setCurrentIndex(prev => (prev - 1 + media.length) % media.length);
+
+
 
   const formatDate = dateStr => {
     if (!dateStr) return '';
@@ -155,31 +277,27 @@ export default function HeroIllustration() {
 
   /* ---------------- Media carousel ---------------- */
   if (!batchDetails && media.length > 0) {
+    const currentSrc = media[currentIndex];
+    const currentIsVideo = isVideo(currentSrc);
+
     return (
       <div className="relative w-full max-w-2xl mx-auto">
         <Card className="w-full aspect-[4/3] bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-2xl overflow-hidden p-0">
           <div className="relative w-full h-full">
 
-            {/* Slides — all rendered, only active is visible (keeps video preloaded) */}
+            {/* Slides */}
             <div className="absolute inset-0 flex items-center justify-center p-2 sm:p-4 md:p-6">
               {media.map((src, idx) => (
                 <Slide
                   key={src}
                   src={src}
                   active={idx === currentIndex}
+                  muted={muted}
+                  /* Only pass onEnded for video slides that should auto-advance */
+                  onEnded={isVideo(src) ? next : undefined}
                 />
               ))}
             </div>
-
-            {/* Video: auto-advance on end */}
-            {isVideo(media[currentIndex]) && (
-              <video
-                key={`adv-${currentIndex}`}
-                src={media[currentIndex]}
-                style={{ display: 'none' }}
-                onEnded={next}
-              />
-            )}
 
             {/* Edge gradients */}
             <div className="absolute inset-0 pointer-events-none">
@@ -187,12 +305,12 @@ export default function HeroIllustration() {
               <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-slate-900/20 to-transparent" />
             </div>
 
-            {/* Video indicator badge */}
-            {isVideo(media[currentIndex]) && (
-              <div className="absolute top-3 left-3 z-20 bg-black/50 backdrop-blur-sm text-white text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                Video
-              </div>
+            {/* Slide type badge (top-left) */}
+            <SlideTypeBadge src={currentSrc} />
+
+            {/* Mute / unmute button — only shown on video slides */}
+            {currentIsVideo && (
+              <MuteButton muted={muted} onToggle={() => setMuted(m => !m)} />
             )}
 
             {/* Nav controls */}
@@ -214,20 +332,15 @@ export default function HeroIllustration() {
                   <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
 
-                {/* Dots — with video icon for video slides */}
+                {/* Dots */}
                 <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 sm:gap-2 z-20">
                   {media.map((src, idx) => (
-                    <button
+                    <SlideDot
                       key={idx}
+                      src={src}
+                      active={idx === currentIndex}
+                      index={idx}
                       onClick={() => setCurrentIndex(idx)}
-                      aria-label={`Go to slide ${idx + 1}`}
-                      className={`transition-all duration-300 rounded-full ${
-                        idx === currentIndex
-                          ? 'bg-white w-6 sm:w-8 h-1.5 sm:h-2 shadow-lg'
-                          : isVideo(src)
-                          ? 'bg-red-400/80 hover:bg-red-300 w-1.5 sm:w-2 h-1.5 sm:h-2'
-                          : 'bg-white/60 hover:bg-white/80 w-1.5 sm:w-2 h-1.5 sm:h-2'
-                      }`}
                     />
                   ))}
                 </div>
